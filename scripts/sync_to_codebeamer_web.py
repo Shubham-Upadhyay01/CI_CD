@@ -295,93 +295,132 @@ GitHub repository changes are being tracked and synchronized.
         try:
             logger.info("🔄 Starting direct push to Codebeamer SCM repository...")
             
-            # Get the Codebeamer SCM repository URL
-            # This will be constructed based on your Codebeamer setup
-            codebeamer_repo_url = self.get_codebeamer_repo_url()
-            
-            if not codebeamer_repo_url:
-                logger.warning("⚠️  Codebeamer SCM repository URL not configured")
-                return False
-            
             repo = Repo('.')
-            
-            # Check if we already have the Codebeamer remote
-            codebeamer_remote = None
-            for remote in repo.remotes:
-                if 'codebeamer' in remote.name or self.codebeamer_url in str(remote.url):
-                    codebeamer_remote = remote
-                    break
-            
-            # Add Codebeamer remote if it doesn't exist
-            if not codebeamer_remote:
-                logger.info(f"Adding Codebeamer remote: {codebeamer_repo_url}")
-                codebeamer_remote = repo.create_remote('codebeamer', codebeamer_repo_url)
-            else:
-                logger.info(f"Using existing Codebeamer remote: {codebeamer_remote.name}")
-            
-            # Get current branch
             current_branch = repo.active_branch.name
             logger.info(f"Current branch: {current_branch}")
             
-            # Push to Codebeamer
-            logger.info(f"Pushing {current_branch} to Codebeamer SCM...")
+            # Get all possible repository URLs to try
+            repo_name = os.getenv('CODEBEAMER_REPO_NAME', 'GitHub-CI_CD')
             
-            # For web-based authentication, we'll need to construct a URL with credentials
-            auth_url = self.get_authenticated_repo_url(codebeamer_repo_url)
+            # List of URL patterns to try (ordered by likelihood)
+            url_patterns = [
+                # Most likely based on your repository setup
+                f"{self.codebeamer_url}/cb/repository/218057.git",
+                f"{self.codebeamer_url}/cb/repository/{repo_name}.git",
+                
+                # Alternative patterns
+                f"{self.codebeamer_url}/cb/project/{self.project_id}/scm/{repo_name}.git",
+                f"{self.codebeamer_url}/cb/project/{self.project_id}/repository/{repo_name}.git", 
+                f"{self.codebeamer_url}/cb/scm/{self.project_id}/{repo_name}.git",
+                f"{self.codebeamer_url}/cb/scm/218057.git"
+            ]
             
-            # Update the remote URL with authentication
-            codebeamer_remote.set_url(auth_url)
+            logger.info(f"🎯 Will try {len(url_patterns)} URL patterns for repository: {repo_name}")
             
-            # Push the current branch
-            push_info = codebeamer_remote.push(f"{current_branch}:{current_branch}")
+            # Try each URL pattern
+            for i, codebeamer_repo_url in enumerate(url_patterns, 1):
+                logger.info(f"🔄 Attempt {i}/{len(url_patterns)}: {codebeamer_repo_url}")
+                
+                try:
+                    # Check if we already have a Codebeamer remote
+                    codebeamer_remote = None
+                    for remote in repo.remotes:
+                        if 'codebeamer' in remote.name:
+                            codebeamer_remote = remote
+                            break
+                    
+                    # Create or update the Codebeamer remote
+                    if not codebeamer_remote:
+                        logger.info(f"   Adding Codebeamer remote...")
+                        codebeamer_remote = repo.create_remote('codebeamer', codebeamer_repo_url)
+                    else:
+                        logger.info(f"   Updating existing Codebeamer remote...")
+                        codebeamer_remote.set_url(codebeamer_repo_url)
+                    
+                    # Create authenticated URL
+                    auth_url = self.get_authenticated_repo_url(codebeamer_repo_url)
+                    codebeamer_remote.set_url(auth_url)
+                    
+                    # Try to push
+                    logger.info(f"   Pushing {current_branch} to Codebeamer...")
+                    push_info = codebeamer_remote.push(f"{current_branch}:{current_branch}", force=True)
+                    
+                    if push_info:
+                        logger.info("✅ Successfully pushed to Codebeamer SCM repository!")
+                        for info in push_info:
+                            logger.info(f"   📋 Push result: {info.summary}")
+                        
+                        logger.info(f"🎯 Working URL pattern: {codebeamer_repo_url}")
+                        return True
+                    
+                except Exception as url_error:
+                    logger.warning(f"   ❌ Failed with URL pattern {i}: {str(url_error)}")
+                    continue
             
-            if push_info:
-                logger.info("✅ Successfully pushed to Codebeamer SCM repository")
-                for info in push_info:
-                    logger.info(f"   Push result: {info.summary}")
-                return True
-            else:
-                logger.error("❌ Push to Codebeamer failed - no push info returned")
-                return False
+            # If all patterns failed
+            logger.error("❌ All URL patterns failed. Repository might not be accessible or configured differently.")
+            logger.info("💡 Troubleshooting tips:")
+            logger.info("   1. Verify the repository exists in Codebeamer")
+            logger.info("   2. Check if Git access is enabled for the repository")
+            logger.info("   3. Verify your credentials have push permissions")
+            logger.info(f"   4. Repository web URL: {self.codebeamer_url}/cb/repository/218057")
+            
+            return False
                 
         except Exception as e:
-            logger.error(f"Error pushing to Codebeamer SCM: {str(e)}")
-            logger.info("💡 Make sure:")
-            logger.info("   1. Codebeamer SCM repository is properly configured")
-            logger.info("   2. Repository has Git access enabled")
-            logger.info("   3. Authentication credentials are correct")
+            logger.error(f"Critical error in SCM push: {str(e)}")
             return False
     
     def get_codebeamer_repo_url(self):
         """Get the Codebeamer SCM repository URL"""
-        # This method constructs the SCM repository URL based on Codebeamer patterns
-        # Common Codebeamer SCM URL patterns:
-        # https://codebeamer.domain/cb/project/PROJECT_ID/scm/REPO_NAME.git
-        # https://codebeamer.domain/cb/scm/PROJECT_ID/REPO_NAME.git
+        # Based on the provided repository details:
+        # Repository Name: GitHub-CI_CD
+        # Repository ID: 218057
+        # Repository URL: https://www.sandbox.codebeamer.plm.philips.com/cb/repository/218057
         
-        # Try to get repository name from environment or use default
+        # Try to get repository name from environment or use the known name
         repo_name = os.getenv('CODEBEAMER_REPO_NAME', 'GitHub-CI_CD')
         
-        # Common URL patterns for Codebeamer SCM
+        logger.info("🔍 Determining Codebeamer SCM repository URL...")
+        logger.info(f"   Repository name: {repo_name}")
+        logger.info(f"   Project ID: {self.project_id}")
+        
+        # For Codebeamer 3.x, try different URL patterns based on the provided repository URL
+        # The repository URL pattern suggests: /cb/repository/ID
+        # But for Git operations, it might be different
+        
         possible_urls = [
+            # Pattern 1: Based on repository ID (most likely for your setup)
+            f"{self.codebeamer_url}/cb/repository/218057.git",
+            f"{self.codebeamer_url}/cb/repository/{repo_name}.git",
+            
+            # Pattern 2: Project-based URLs
             f"{self.codebeamer_url}/cb/project/{self.project_id}/scm/{repo_name}.git",
+            f"{self.codebeamer_url}/cb/project/{self.project_id}/repository/{repo_name}.git",
+            f"{self.codebeamer_url}/cb/project/{self.project_id}/repositories/{repo_name}.git",
+            
+            # Pattern 3: Direct SCM URLs
             f"{self.codebeamer_url}/cb/scm/{self.project_id}/{repo_name}.git",
             f"{self.codebeamer_url}/scm/{self.project_id}/{repo_name}.git",
-            f"{self.codebeamer_url}/cb/project/{self.project_id}/repositories/{repo_name}.git"
+            
+            # Pattern 4: Repository ID based (alternative)
+            f"{self.codebeamer_url}/cb/scm/218057.git",
+            f"{self.codebeamer_url}/scm/218057.git"
         ]
         
-        logger.info("🔍 Trying to determine Codebeamer SCM repository URL...")
+        logger.info("🔍 Possible SCM URL patterns:")
+        for i, url in enumerate(possible_urls, 1):
+            logger.info(f"   {i}. {url}")
         
-        # Test each URL pattern to see which one works
-        for url in possible_urls:
-            logger.info(f"   Testing: {url}")
-            # For now, return the most common pattern
-            # In a production system, you'd test connectivity to each URL
+        # Use the most likely URL pattern based on your repository setup
+        # Given that your repository URL is /cb/repository/218057, 
+        # the Git URL is likely /cb/repository/218057.git
+        primary_url = f"{self.codebeamer_url}/cb/repository/218057.git"
         
-        # Return the most likely URL pattern for Codebeamer 3.x
-        scm_url = f"{self.codebeamer_url}/cb/project/{self.project_id}/scm/{repo_name}.git"
-        logger.info(f"✅ Using SCM URL: {scm_url}")
-        return scm_url
+        logger.info(f"✅ Primary SCM URL: {primary_url}")
+        logger.info(f"💡 If this fails, the pipeline will try alternative patterns")
+        
+        return primary_url
     
     def get_authenticated_repo_url(self, repo_url):
         """Create an authenticated repository URL for Git operations"""
