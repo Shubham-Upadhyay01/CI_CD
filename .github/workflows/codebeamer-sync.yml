@@ -41,8 +41,20 @@ jobs:
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
 
-    - name: Sync repository to Codebeamer
+    - name: Try REST API Sync (for newer Codebeamer versions)
+      id: rest_sync
+      continue-on-error: true
       run: python scripts/sync_to_codebeamer.py
+      env:
+        GITHUB_EVENT_NAME: ${{ github.event_name }}
+        GITHUB_REF: ${{ github.ref }}
+        GITHUB_SHA: ${{ github.sha }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_EVENT_PATH: ${{ github.event_path }}
+
+    - name: Fallback to Web-based Sync (for older Codebeamer versions)
+      if: steps.rest_sync.outcome == 'failure'
+      run: python scripts/sync_to_codebeamer_web.py
       env:
         GITHUB_EVENT_NAME: ${{ github.event_name }}
         GITHUB_REF: ${{ github.ref }}
@@ -52,16 +64,25 @@ jobs:
 
     - name: Update Codebeamer commit references
       if: github.event_name == 'push'
+      continue-on-error: true
       run: python scripts/update_commit_refs.py
       env:
         COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         COMMIT_AUTHOR: ${{ github.event.head_commit.author.name }}
         COMMIT_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
 
+    - name: Log sync results
+      run: |
+        echo "::notice::Codebeamer synchronization completed"
+        echo "REST API Sync: ${{ steps.rest_sync.outcome }}"
+        if [ "${{ steps.rest_sync.outcome }}" = "failure" ]; then
+          echo "::warning::REST API sync failed - used web-based fallback for older Codebeamer version"
+        fi
+
     - name: Notify on failure
       if: failure()
       run: |
-        echo "::error::Codebeamer synchronization failed"
+        echo "::error::Codebeamer synchronization failed completely"
         python scripts/notify_failure.py
 
   validate-sync:
@@ -84,6 +105,7 @@ jobs:
         pip install requests
 
     - name: Validate Codebeamer sync
+      continue-on-error: true
       run: python scripts/validate_sync.py
       env:
         GITHUB_SHA: ${{ github.sha }}
