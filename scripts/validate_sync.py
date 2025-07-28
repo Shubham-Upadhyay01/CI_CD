@@ -240,7 +240,9 @@ class SyncValidator:
         
         # Summary
         logger.info("=" * 50)
-        logger.info("VALIDATION SUMMARY: 0/4 checks passed" if all(result[1] for result in validation_results) else f"VALIDATION SUMMARY: {sum(1 for _, success in validation_results if success)}/{len(validation_results)} checks passed")
+        passed_count = sum(1 for _, success in validation_results if success)
+        total_count = len(validation_results)
+        logger.info(f"VALIDATION SUMMARY: {passed_count}/{total_count} checks passed")
         logger.info("=" * 50)
         
         passed_count = 0
