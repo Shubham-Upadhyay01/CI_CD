@@ -49,19 +49,79 @@ class CodebeamerSync:
             'Accept': 'application/json'
         })
         
+    def test_basic_connectivity(self):
+        """Test basic connectivity and find correct API version"""
+        logger.info("Testing basic connectivity and API endpoints...")
+        
+        # Test different API versions
+        api_versions = ['/rest/v3', '/rest/v2', '/cb/rest/v3', '/cb/rest/v2']
+        
+        for api_version in api_versions:
+            try:
+                test_url = f"{self.codebeamer_url}{api_version}/user"
+                logger.info(f"Testing endpoint: {test_url}")
+                response = self.session.get(test_url)
+                
+                if response.status_code == 200:
+                    user_data = response.json()
+                    logger.info(f"✅ Found working API endpoint: {api_version}")
+                    logger.info(f"User: {user_data.get('name', 'Unknown')}")
+                    logger.info(f"System Admin: {user_data.get('systemAdmin', False)}")
+                    return api_version
+                else:
+                    logger.warning(f"Endpoint {api_version} returned: {response.status_code}")
+                    
+            except Exception as e:
+                logger.warning(f"Error testing {api_version}: {str(e)}")
+        
+        return None
+        
     def get_or_create_scm_repository(self):
         """Get existing SCM repository or create a new one"""
         try:
-            # First, try to find existing SCM repository
-            scm_repos_url = f"{self.codebeamer_url}/rest/v3/projects/{self.project_id}/scmRepositories"
+            # First test connectivity and find correct API version
+            api_version = self.test_basic_connectivity()
+            
+            if not api_version:
+                logger.error("Could not find working API endpoint")
+                return None
+            
+            # Try to find existing SCM repository
+            scm_repos_url = f"{self.codebeamer_url}{api_version}/projects/{self.project_id}/scmRepositories"
+            logger.info(f"Checking SCM repositories at: {scm_repos_url}")
             response = self.session.get(scm_repos_url)
             
             if response.status_code == 200:
                 repositories = response.json()
+                logger.info(f"Found {len(repositories)} existing repositories")
                 for repo in repositories:
                     if repo.get('repositoryUrl') == self.github_repo_url:
                         logger.info(f"Found existing SCM repository: {repo['id']}")
                         return repo['id']
+            elif response.status_code == 404:
+                logger.warning(f"SCM repositories endpoint not found. Trying alternative approaches...")
+                
+                # Try alternative endpoint structures
+                alternative_urls = [
+                    f"{self.codebeamer_url}{api_version}/project/{self.project_id}/scmRepositories",
+                    f"{self.codebeamer_url}{api_version}/projects/{self.project_id}/repositories",
+                    f"{self.codebeamer_url}{api_version}/scmRepositories?projectId={self.project_id}"
+                ]
+                
+                for alt_url in alternative_urls:
+                    logger.info(f"Trying alternative URL: {alt_url}")
+                    alt_response = self.session.get(alt_url)
+                    if alt_response.status_code == 200:
+                        logger.info(f"✅ Found working SCM endpoint: {alt_url}")
+                        scm_repos_url = alt_url
+                        repositories = alt_response.json()
+                        break
+                else:
+                    logger.error("Could not find working SCM repositories endpoint")
+                    return None
+            else:
+                logger.error(f"Failed to access SCM repositories: {response.status_code} - {response.text}")
+                return None
             
             # Create new SCM repository if not found
             repo_data = {
@@ -72,6 +132,7 @@ class CodebeamerSync:
                 "projectId": int(self.project_id)
             }
             
+            logger.info(f"Creating new SCM repository: {repo_data}")
             create_response = self.session.post(scm_repos_url, json=repo_data)
             
             if create_response.status_code in [200, 201]:
@@ -79,7 +140,8 @@ class CodebeamerSync:
                 logger.info(f"Created new SCM repository: {new_repo['id']}")
                 return new_repo['id']
             else:
-                logger.error(f"Failed to create SCM repository: {create_response.text}")
+                logger.error(f"Failed to create SCM repository: {create_response.status_code}")
+                logger.error(f"Response body: {create_response.text}")
                 return None
                 
         except Exception as e:
@@ -199,6 +261,10 @@ class CodebeamerSync:
         if missing_vars:
             logger.error(f"Missing required environment variables: {missing_vars}")
             return False
+        
+        logger.info(f"Connecting to: {self.codebeamer_url}")
+        logger.info(f"Username: {self.username}")
+        logger.info(f"Project ID: {self.project_id}")
         
         try:
             # Get or create SCM repository

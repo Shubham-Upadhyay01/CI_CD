@@ -32,30 +32,49 @@ def setup_session():
     
     return session
 
+def find_working_api_version(session):
+    """Find the correct API version for this Codebeamer instance"""
+    print("🔍 Finding correct API version...")
+    
+    api_versions = ['/rest/v3', '/rest/v2', '/cb/rest/v3', '/cb/rest/v2', '/rest/v1']
+    
+    for api_version in api_versions:
+        try:
+            test_url = f"{CODEBEAMER_URL}{api_version}/user"
+            print(f"   Testing: {test_url}")
+            response = session.get(test_url)
+            
+            if response.status_code == 200:
+                user_data = response.json()
+                print(f"✅ Found working API version: {api_version}")
+                print(f"   User: {user_data.get('name', 'Unknown')}")
+                print(f"   Email: {user_data.get('email', 'No email')}")
+                print(f"   System Admin: {user_data.get('systemAdmin', False)}")
+                return api_version
+            else:
+                print(f"   ❌ {api_version}: HTTP {response.status_code}")
+                
+        except Exception as e:
+            print(f"   ❌ {api_version}: Error - {str(e)}")
+    
+    return None
+
 def test_basic_connectivity(session):
     """Test basic connectivity to Codebeamer"""
     print("🔗 Testing basic connectivity...")
-    try:
-        response = session.get(f"{CODEBEAMER_URL}/rest/v3/user")
-        if response.status_code == 200:
-            user_data = response.json()
-            print(f"✅ Connected successfully!")
-            print(f"   User: {user_data.get('name', 'Unknown')}")
-            print(f"   Email: {user_data.get('email', 'No email')}")
-            print(f"   System Admin: {user_data.get('systemAdmin', False)}")
-            return True
-        else:
-            print(f"❌ Connection failed: {response.status_code} - {response.text}")
-            return False
-    except Exception as e:
-        print(f"❌ Connection error: {str(e)}")
-        return False
+    
+    api_version = find_working_api_version(session)
+    if api_version:
+        return api_version
+    else:
+        print("❌ Could not find any working API endpoint")
+        return None
 
-def test_project_access(session):
+def test_project_access(session, api_version):
     """Test access to project 68"""
-    print("\n📂 Testing project access...")
+    print(f"\n📂 Testing project access using {api_version}...")
     try:
-        response = session.get(f"{CODEBEAMER_URL}/rest/v3/projects/{CODEBEAMER_PROJECT_ID}")
+        response = session.get(f"{CODEBEAMER_URL}{api_version}/projects/{CODEBEAMER_PROJECT_ID}")
         if response.status_code == 200:
             project_data = response.json()
             print(f"✅ Project access confirmed!")
@@ -70,26 +89,42 @@ def test_project_access(session):
         print(f"❌ Project access error: {str(e)}")
         return False
 
-def test_scm_repositories(session):
-    """Test SCM repository access"""
-    print("\n🔧 Testing SCM repository access...")
-    try:
-        response = session.get(f"{CODEBEAMER_URL}/rest/v3/projects/{CODEBEAMER_PROJECT_ID}/scmRepositories")
-        if response.status_code == 200:
-            repos = response.json()
-            print(f"✅ SCM repository access confirmed!")
-            print(f"   Found {len(repos)} existing repositories in project {CODEBEAMER_PROJECT_ID}")
-            for repo in repos[:3]:  # Show first 3
-                print(f"   - {repo.get('name', 'Unknown')} (ID: {repo.get('id', 'Unknown')})")
-            return True
-        else:
-            print(f"❌ SCM repository access failed: {response.status_code} - {response.text}")
-            return False
-    except Exception as e:
-        print(f"❌ SCM repository error: {str(e)}")
-        return False
+def test_scm_repositories(session, api_version):
+    """Test SCM repository access with multiple endpoint attempts"""
+    print(f"\n🔧 Testing SCM repository access using {api_version}...")
+    
+    # Try different SCM endpoint patterns
+    scm_endpoints = [
+        f"{api_version}/projects/{CODEBEAMER_PROJECT_ID}/scmRepositories",
+        f"{api_version}/project/{CODEBEAMER_PROJECT_ID}/scmRepositories",
+        f"{api_version}/projects/{CODEBEAMER_PROJECT_ID}/repositories",
+        f"{api_version}/scmRepositories?projectId={CODEBEAMER_PROJECT_ID}",
+        f"{api_version}/repositories?projectId={CODEBEAMER_PROJECT_ID}"
+    ]
+    
+    for endpoint in scm_endpoints:
+        try:
+            url = f"{CODEBEAMER_URL}{endpoint}"
+            print(f"   Trying: {url}")
+            response = session.get(url)
+            
+            if response.status_code == 200:
+                repos = response.json()
+                print(f"✅ SCM repository access confirmed at: {endpoint}")
+                print(f"   Found {len(repos)} existing repositories in project {CODEBEAMER_PROJECT_ID}")
+                for repo in repos[:3]:  # Show first 3
+                    print(f"   - {repo.get('name', 'Unknown')} (ID: {repo.get('id', 'Unknown')})")
+                return endpoint
+            else:
+                print(f"   ❌ {response.status_code}: {response.reason}")
+                
+        except Exception as e:
+            print(f"   ❌ Error: {str(e)}")
+    
+    print("❌ No working SCM repository endpoint found")
+    return None
 
-def test_create_test_repo(session):
+def test_create_test_repo(session, api_version, scm_endpoint):
     """Test creating a test SCM repository"""
     print("\n🧪 Testing SCM repository creation...")
     
@@ -102,10 +137,11 @@ def test_create_test_repo(session):
     }
     
     try:
-        response = session.post(
-            f"{CODEBEAMER_URL}/rest/v3/projects/{CODEBEAMER_PROJECT_ID}/scmRepositories",
-            json=test_repo_data
-        )
+        url = f"{CODEBEAMER_URL}{scm_endpoint}"
+        print(f"   Creating repository at: {url}")
+        print(f"   Data: {json.dumps(test_repo_data, indent=2)}")
+        
+        response = session.post(url, json=test_repo_data)
         
         if response.status_code in [200, 201]:
             repo = response.json()
@@ -115,7 +151,7 @@ def test_create_test_repo(session):
             
             # Clean up - delete the test repository
             print("🧹 Cleaning up test repository...")
-            delete_response = session.delete(f"{CODEBEAMER_URL}/rest/v3/scmRepositories/{repo.get('id')}")
+            delete_response = session.delete(f"{CODEBEAMER_URL}{api_version}/scmRepositories/{repo.get('id')}")
             if delete_response.status_code in [200, 204]:
                 print("✅ Test repository cleaned up successfully!")
             else:
@@ -123,37 +159,12 @@ def test_create_test_repo(session):
             
             return True
         else:
-            print(f"❌ Repository creation failed: {response.status_code} - {response.text}")
+            print(f"❌ Repository creation failed: {response.status_code}")
+            print(f"   Response: {response.text}")
             return False
     except Exception as e:
         print(f"❌ Repository creation error: {str(e)}")
         return False
-
-def test_api_endpoints(session):
-    """Test various API endpoints that will be used"""
-    print("\n🔍 Testing API endpoints...")
-    
-    endpoints = [
-        ("User Info", f"/rest/v3/user"),
-        ("Project Info", f"/rest/v3/projects/{CODEBEAMER_PROJECT_ID}"),
-        ("SCM Repositories", f"/rest/v3/projects/{CODEBEAMER_PROJECT_ID}/scmRepositories"),
-    ]
-    
-    results = []
-    for name, endpoint in endpoints:
-        try:
-            response = session.get(f"{CODEBEAMER_URL}{endpoint}")
-            if response.status_code == 200:
-                print(f"   ✅ {name}: OK")
-                results.append(True)
-            else:
-                print(f"   ❌ {name}: {response.status_code}")
-                results.append(False)
-        except Exception as e:
-            print(f"   ❌ {name}: Error - {str(e)}")
-            results.append(False)
-    
-    return all(results)
 
 def main():
     """Run all tests"""
@@ -166,45 +177,57 @@ def main():
     
     session = setup_session()
     
-    tests = [
-        ("Basic Connectivity", lambda: test_basic_connectivity(session)),
-        ("Project Access", lambda: test_project_access(session)),
-        ("SCM Repository Access", lambda: test_scm_repositories(session)),
-        ("API Endpoints", lambda: test_api_endpoints(session)),
-        ("Repository Creation", lambda: test_create_test_repo(session)),
-    ]
+    # Test 1: Find working API version
+    api_version = test_basic_connectivity(session)
+    if not api_version:
+        print("\n❌ CRITICAL: Cannot connect to Codebeamer API")
+        print("Please check:")
+        print("1. URL is correct")
+        print("2. Username and password are correct")
+        print("3. User has API access permissions")
+        return
     
-    results = []
-    for test_name, test_func in tests:
-        result = test_func()
-        results.append((test_name, result))
+    # Test 2: Project access
+    project_ok = test_project_access(session, api_version)
+    if not project_ok:
+        print(f"\n❌ CRITICAL: Cannot access project {CODEBEAMER_PROJECT_ID}")
+        print("Please check:")
+        print("1. Project ID is correct")
+        print("2. User has access to this project")
+        return
+    
+    # Test 3: SCM repository access
+    scm_endpoint = test_scm_repositories(session, api_version)
+    if not scm_endpoint:
+        print("\n❌ CRITICAL: Cannot access SCM repositories")
+        print("Please check:")
+        print("1. User has SCM repository permissions")
+        print("2. Project supports SCM repositories")
+        return
+    
+    # Test 4: Repository creation
+    create_ok = test_create_test_repo(session, api_version, scm_endpoint)
     
     # Summary
     print("\n" + "=" * 50)
     print("📊 TEST SUMMARY")
     print("=" * 50)
+    print(f"API Version: {api_version}")
+    print(f"SCM Endpoint: {scm_endpoint}")
+    print(f"Project Access: {'✅ OK' if project_ok else '❌ FAIL'}")
+    print(f"Repository Creation: {'✅ OK' if create_ok else '❌ FAIL'}")
     
-    passed = 0
-    for test_name, result in results:
-        status = "✅ PASS" if result else "❌ FAIL"
-        print(f"{test_name}: {status}")
-        if result:
-            passed += 1
-    
-    print(f"\nResults: {passed}/{len(results)} tests passed")
-    
-    if passed == len(results):
-        print("\n🎉 All tests passed! Your Codebeamer configuration is ready for the GitHub pipeline!")
+    if project_ok and scm_endpoint and create_ok:
+        print("\n🎉 All tests passed! Your Codebeamer configuration is ready!")
+        print(f"\n📝 Configuration for your pipeline:")
+        print(f"   Working API: {api_version}")
+        print(f"   SCM Endpoint: {scm_endpoint}")
         print("\nNext steps:")
-        print("1. Add the GitHub Secrets as shown in SETUP.md")
-        print("2. Commit your repository files")
-        print("3. Make a test commit to trigger the pipeline")
+        print("1. Push the updated pipeline code")
+        print("2. Add GitHub Secrets")
+        print("3. Make a test commit")
     else:
-        print(f"\n⚠️  {len(results) - passed} test(s) failed. Please check your configuration:")
-        print("1. Verify your Codebeamer credentials")
-        print("2. Ensure you have system administrator permissions")
-        print("3. Check project 68 access permissions")
-        print("4. Verify REST API is enabled")
+        print("\n⚠️  Some tests failed. Please fix the issues above before proceeding.")
 
 if __name__ == "__main__":
     main() 
