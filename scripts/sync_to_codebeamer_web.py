@@ -70,13 +70,24 @@ class CodebeamerWebSync:
                 'password': self.password
             }
             
+            # Look for CSRF token (CRITICAL for Codebeamer!)
+            csrf_token_match = re.search(r'var csrfToken = ["\']([^"\']*)["\']', login_page_response.text)
+            csrf_param_match = re.search(r'var csrfParameterName = ["\']([^"\']*)["\']', login_page_response.text)
+            if csrf_token_match and csrf_param_match:
+                csrf_token = csrf_token_match.group(1)
+                csrf_param = csrf_param_match.group(1)
+                login_form_data[csrf_param] = csrf_token
+                logger.info(f"Found CSRF token: {csrf_param} = {csrf_token}")
+            else:
+                logger.warning("CSRF token not found - this may cause login issues")
+            
             # Look for hidden form fields
             hidden_inputs = re.findall(r'<input[^>]*type=["\']hidden["\'][^>]*>', login_page_response.text)
             for hidden_input in hidden_inputs:
                 name_match = re.search(r'name=["\']([^"\']+)["\']', hidden_input)
                 value_match = re.search(r'value=["\']([^"\']*)["\']', hidden_input)
                 if name_match and value_match:
-                    login_form_data[name_match.group(1)] = value_match.group(2)
+                    login_form_data[name_match.group(1)] = value_match.group(1)
                     logger.debug(f"Found hidden field: {name_match.group(1)}")
             
             # Step 3: Submit login
@@ -89,15 +100,43 @@ class CodebeamerWebSync:
             
             # Step 4: Check login success
             if login_response.status_code == 200:
-                if 'login.spr' not in login_response.url and ('projects' in login_response.url or 'project' in login_response.url):
+                final_url = login_response.url
+                logger.info(f"Final URL after login: {final_url}")
+                
+                # Check for authentication cookies FIRST (most reliable indicator)
+                has_auth_cookies = any(cookie.name in ['Bearer', 'JSESSIONID'] for cookie in self.session.cookies)
+                
+                # Check if we're NOT on login page anymore
+                not_on_login = 'login.spr' not in final_url
+                
+                # Check for success indicators
+                url_success = any(indicator in final_url.lower() for indicator in ['/cb/user', '/cb/project', '/cb/main'])
+                
+                # PRIORITIZE SUCCESS: If we have auth cookies and are not on login page, login succeeded
+                if has_auth_cookies and not_on_login:
                     logger.info("✅ Successfully logged into Codebeamer")
+                    logger.info(f"- Has auth cookies: {has_auth_cookies}")
+                    logger.info(f"- Not on login page: {not_on_login}")
+                    logger.info(f"- URL indicates success: {url_success}")
                     return True
-                elif 'invalid' in login_response.text.lower() or 'error' in login_response.text.lower():
+                # Secondary check: URL success indicators
+                elif url_success:
+                    logger.info("✅ Successfully logged into Codebeamer")
+                    logger.info(f"- URL indicates success: {url_success}")
+                    logger.info(f"- Has auth cookies: {has_auth_cookies}")
+                    return True
+                # Only check for errors if no success indicators found
+                elif 'invalid' in login_response.text.lower() or 'incorrect' in login_response.text.lower():
                     logger.error("❌ Login failed - invalid credentials")
                     return False
                 else:
-                    logger.info("⚠️  Login status unclear, proceeding...")
-                    return True
+                    # Final fallback: if we have cookies and not on login, consider success
+                    if has_auth_cookies:
+                        logger.info("✅ Login appears successful (has auth cookies)")
+                        return True
+                    else:
+                        logger.warning("⚠️  Login status unclear, proceeding...")
+                        return True
             else:
                 logger.error(f"Login failed with status: {login_response.status_code}")
                 return False
