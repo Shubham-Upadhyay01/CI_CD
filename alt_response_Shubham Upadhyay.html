@@ -1,0 +1,1647 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+	
+
+
+
+
+
+
+
+ 
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+	
+
+
+
+
+
+
+
+
+<title>PTC - Codebeamer</title>
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="x-ua-compatible" content="IE=Edge">
+
+
+	
+	
+	
+
+
+<meta name="description" content="codebeamer is the award winning Collaborative Application Lifecycle Management (ALM) solution for distributed software development. It provides project management, wikis and knowledge management, document management, task, requirement and defect management, configuration management (ITIL), continuous integration, version control, source code analysis and forums through a single and secure environment."/>
+<meta name="keywords" content="git, mercurial, subversion, svn, bug tracking software, bug tracker software, issue tracking software, issue tracker software, document management software, wiki software, change management software, version control, distributed version control, distributed revision control, alm, forge, codebeamer, code beamer"/>
+<link rel="icon" href="/cb/urlversioned/202507280411/images/favicon.ico" type="image/png" />
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+	
+	if (typeof console == "undefined") {
+		var consoleLog = function(any) { /*alert(any); */ };
+		console = {
+			log: consoleLog,
+			debug: consoleLog,
+			warn: consoleLog,
+			error: consoleLog
+		};
+	} else if (!("debug" in console)) { /* IE8 does not support debug method */
+		console.debug = console.log;
+	}
+
+	var contextPath = '/cb';
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    // current language
+    var language = 'en';
+    
+    
+    
+
+    var country = '';
+    var i18nETAG = '9dd14208f370a36d824a3900d2599c0a';
+
+    console.log("Javascript is using localization: language:" + language +" (resource-language:en), country:" + country +", i18nETAG:" + i18nETAG);
+</script>
+
+
+<script type="text/javascript">
+	var developmentMode = false;
+	// add the CB version, can be used to make urls of css/js files versioned so they will get refreshed when CB upgraded automatically
+	var urlVersionParam = '202507280411';
+
+    var ajaxHeaders = {};
+
+    
+	
+	var currentWorkingSetId = null;
+	ajaxHeaders["workingSetId"] = currentWorkingSetId;
+	// console.log("ajaxHeaders:" + JSON.stringify(ajaxHeaders));
+
+    
+    var cookieSameSite = "Lax";
+
+    var codebeamer = codebeamer || {};
+    codebeamer.GLOBAL_SETTINGS = codebeamer.GLOBAL_SETTINGS || {};
+	codebeamer.GLOBAL_SETTINGS.allowHtmlMode = false;
+	codebeamer.GLOBAL_SETTINGS.insertImageByName = true;
+	codebeamer.GLOBAL_SETTINGS.insertImageByNameAndHash = true;
+
+	console.debug("Using codebeamer.GLOBAL_SETTINGS:" + codebeamer.GLOBAL_SETTINGS);
+</script>
+
+<script type="text/javascript">
+	mxBasePath = contextPath + "/js/libs/mxGraph/src";
+	mxLoadResources = false;
+	mxLanguage = language;
+</script>
+
+
+
+
+
+	<link rel="stylesheet" href="/cb/urlversioned/202507280411/wro/all.css" type="text/css" media="all" />
+
+
+
+
+
+<link rel="stylesheet" href="/cb/urlversioned/202507280411/wro/newskin.css" type="text/css" media="all" />
+<link rel="stylesheet" href="/cb/urlversioned/202507280411/wro/oslc-client.css" type="text/css" media="all" />
+
+<script type="text/javascript" src="/cb/urlversioned/202507280411/wro/all.js"></script>
+<script type="text/javascript" src="/cb/urlversioned/202507280411/wro/oslc-client.js"></script>
+
+
+<script type="text/javascript">
+	window.jsErrors = [];
+	window.onerror = function(errorMessage) {
+		(!!window['jsErrors']) || (window.jsErrors = []);
+		window.jsErrors[window.jsErrors.length] = errorMessage;
+	}
+</script>
+
+
+
+
+
+
+<style id="jstree-stylesheet"></style>
+
+
+
+
+
+
+<!-- Using the user specific date-format in Calendar component -->
+
+	
+	
+
+
+
+
+
+
+<script type="text/javascript">
+// fixing JSPwikis' collapsable shows a bullet on IE by default
+Collapsable.bullet.innerHTML = "&nbsp;";
+
+showDiff.loadAllDiffsEnabled = false;
+
+$(function () {
+	initializeHighchartLocalization(",", ".");
+	initializeJumpToDocumentViewHandler();
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+	$(function () {
+	    var userHash = "-1737395688";
+		codebeamer.userDependentStorage.initUserStorages(userHash);
+
+	    var emptyHash = "0";
+	    if (userHash !== emptyHash) {
+            clearCookiesAndLocalStorageWhenExpired(userHash);
+        }
+	});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    var _csrf = (function() {
+
+        
+            
+            
+            
+            var csrfHeaderName = "";
+            var csrfParameterName = "";
+            var csrfToken = "";
+        
+        
+        
+        function initializeCsrf() {
+            initializeCsrfForm();
+            initializeCsrfAjaxHeader();
+        }
+
+        function initializeCsrfForm() {
+            if (hasCsrf()) {
+                $('form').each(function(i, ele) {
+                    addCsrfHiddenFieldToForm(ele);
+                });
+            }
+        }
+
+        function initializeCsrfAjaxHeader() {
+            $.ajaxSetup({
+                cache: false, // turn off caching for any ajax calls as default
+                headers: getOrCreateAjaxHeaders(csrfHeaderName, csrfToken)
+            });
+            
+        }
+
+        function submitCsrfFormWithUrl(url) {
+            var form = $('<form method="post" action="' + url + '"></form>');
+            $(document.body).append(form);
+            if (hasCsrf()) {
+                addCsrfHiddenFieldToForm(form);
+            }
+            form.submit();
+        }
+
+        function addCsrfHiddenFieldToForm(form) {
+            if (hasCsrf()) {
+                var csrfInputFieldValue = $(form).children('input[name="' + csrfParameterName + '"]').val();
+                if (!csrfInputFieldValue) {
+                    $('<input type="hidden" name="' + csrfParameterName + '" value="' + csrfToken + '"/>').prependTo(form);
+                }
+            }
+        }
+
+        function hasCsrf() {
+            return csrfHeaderName && csrfParameterName && csrfToken;
+        }
+        
+        function getOrCreateAjaxHeaders(csrfHeaderName, csrfToken) {
+            if (window.ajaxHeaders == null) {
+                window.ajaxHeaders = { };
+            }
+            if (hasCsrf()) {
+                window.ajaxHeaders[csrfHeaderName] = csrfToken;
+            }
+            return window.ajaxHeaders;
+        }
+
+        return {
+            csrfHeaderName : csrfHeaderName,
+            csrfParameterName : csrfParameterName,
+            csrfToken : csrfToken,
+            hasCsrf : hasCsrf,
+            initializeCsrf : initializeCsrf,
+            initializeCsrfForm : initializeCsrfForm,
+            initializeCsrfAjaxHeader : initializeCsrfAjaxHeader,
+            submitCsrfFormWithUrl : submitCsrfFormWithUrl,
+            addCsrfHiddenFieldToForm : addCsrfHiddenFieldToForm,
+        }
+    })();
+
+    try {
+        $(function () {
+            _csrf.initializeCsrf();
+        })
+    } catch (ignored) { }
+
+    try {
+        _csrf.initializeCsrf();
+    } catch (ignored) { }
+</script>
+
+<script type="text/javascript">
+	$(function () {
+		if (codebeamer && codebeamer['WYSIWYG']) {
+			var cbHumanReadableFileUploadLimit = '5 GB';
+			codebeamer.WYSIWYG.setCbHumanReadableFileUploadLimit(cbHumanReadableFileUploadLimit);
+		}
+	});
+</script>
+
+
+	
+	
+
+	
+	
+	<script type="text/javascript">
+		$(function () {
+			layoutScripts.init(false, 'Collapse\/Expand Header', 'Search…');
+			// handling ajax authorization errors
+			$(document).ajaxError(ajaxErrorHandler);
+            codebeamer.Redirect.checkRedirectMessage();
+		});
+	</script>
+	
+
+	
+
+    
+
+	<script type="text/javascript">
+		var hotkeysConfig = {
+			'subjectId': null
+		};
+
+		if ("" == "false") {
+			hotkeysConfig.disabledModules = ["admin"];
+		}
+
+		var codebeamerHotkeys = new codebeamer.Hotkeys(hotkeysConfig);
+
+		// initialize the form related hotkeys as well
+		new codebeamer.FormHotkeys();
+		// used to render correct toolbar menu -> BUG-790444
+		codebeamer.projectId = '';
+
+		codebeamer.userPreferences = {
+			newWindowTarget: '_top',
+			alwaysDisplayContextMenuIcons: 'true' == 'true',
+			doubleClickEditOnDocView: 'false' == 'true',
+			doubleClickEditOnWikiSection: 'false' == 'true',
+			copyAttachmentsOnNewReferringItem: '2'
+		};
+		// turning off propagate dependencies configuration on tracker level
+		codebeamer.hidePropagateDependenciesOnTrackerLevel = true;
+	</script>
+
+	<!--
+~ Copyright by Intland Software
+~
+~ All rights reserved.
+~
+~ This software is the confidential and proprietary information
+~ of Intland Software. ("Confidential Information"). You
+~ shall not disclose such Confidential Information and shall use
+~ it only in accordance with the terms of the license agreement
+~ you entered into with Intland.
+-->
+
+
+
+
+
+
+    
+
+    <script type="application/javascript">
+        $(function () {
+            cbToastrNotification.init({});
+            cbWsNotification.initAndConnect({
+                wsEndpoint: '/cb/ws/notification',
+                clientId: 111,
+                onConnect: function(){
+                    cbWsNotification.subscribeToDefaultNotification();
+                }
+            });
+        })
+    </script>
+
+
+
+
+</head>
+
+
+
+
+
+<body class=" yui-skin-cb newskin workspaceModule loginModule  " bgcolor="white" link="#000000" vlink="#000000" alink="#000000" topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+
+	
+	
+		
+		<div id="hotkeysHint" class="hint" onclick="toggleHotkeys(); return false;" title="Show keyboard hotkeys" style="display:none;">
+			<table>
+
+			</table>
+		</div>
+
+		
+		
+
+		<div class="ui-layout-north " style="overflow:hidden;border:0;" id="northPane">
+			<div id="headerPane">
+                
+
+                
+                
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+<div style="width: 100%;" class="headerTopContainer noPrint">
+	<a href="http://localhost:8080/cb" style="text-decoration: none;" class="logoLink">
+		<img class="logo" src="/cb/urlversioned/202507280411/logo/custom-logo5691350831500.png" style=""
+			border="0" alt="http://localhost:8080/cb" title="Visit http://localhost:8080/cb" />
+	</a>
+
+	<div class="headerCenter">
+		<span id="slogan"><p><b>Sandbox</b></p><b>Codebeamer Application Lifecycle Management (ALM)</b></span>
+		
+
+		
+	</div>
+
+	<div id="toprightmenuContainer" class="mainmenu">
+		<div class="toprightmenu">
+			
+
+
+
+
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+			<link rel="stylesheet" href="/cb/urlversioned/202507280411/stylesheet/toolbar-search-box.less" type="text/css" media="all" />
+<script type="text/javascript" src="/cb/urlversioned/202507280411/js/toolbar-search-box.js"></script>
+
+<div class="searchBoxContainer">
+	<form action="/cb/search.spr" method="GET">
+
+		<div class="searchContainer closed" data-original-width="174">
+			<div class="searchField">
+				<input class="searchInput" name="filter" type="text" value="" maxlength="80" placeholder="Search&hellip;" autocomplete="on">
+				<span class="toggleButton" title="Start Search"></span>
+			</div>
+		</div>
+		<div class="searchOptions">
+
+			<input type="hidden" name="advanced" value="true">
+			<input type="hidden" name="projId">
+
+			<div class="labelContainer linkActionLabel"><span>Last Modified</span><a href="#" class="goToHistoryLink">Recently Visited Items</a></div>
+			<ul class="inputContainer">
+
+									<li class="inputField" title="Ever">
+						<input type="radio" class="advancedSearchDateRangeFilter" id="everDateRangeOption6e92532b98fe4ea59eea5768fbf09164" name="lastModifiedAtDuration" value="all"  checked="checked" >
+						<label for="everDateRangeOption6e92532b98fe4ea59eea5768fbf09164">Ever</label>
+					</li>
+									<li class="inputField" title="Search for artifacts modified during the last 7 days">
+						<input type="radio" class="advancedSearchDateRangeFilter" id="last7DaysDateRangeOption6e92532b98fe4ea59eea5768fbf09164" name="lastModifiedAtDuration" value="-7" >
+						<label for="last7DaysDateRangeOption6e92532b98fe4ea59eea5768fbf09164">In 7 days</label>
+					</li>
+									<li class="inputField" title="Search for artifacts modified during the last 30 days">
+						<input type="radio" class="advancedSearchDateRangeFilter" id="last30DaysDateRangeOption6e92532b98fe4ea59eea5768fbf09164" name="lastModifiedAtDuration" value="-30" >
+						<label for="last30DaysDateRangeOption6e92532b98fe4ea59eea5768fbf09164">In 30 days</label>
+					</li>
+									<li class="inputField" title="Search for artifacts modified during the last 90 days">
+						<input type="radio" class="advancedSearchDateRangeFilter" id="last90DaysDateRangeOption6e92532b98fe4ea59eea5768fbf09164" name="lastModifiedAtDuration" value="-90" >
+						<label for="last90DaysDateRangeOption6e92532b98fe4ea59eea5768fbf09164">In 90 days</label>
+					</li>
+				
+			</ul>
+			<hr class="searchOptionsSeparator" />
+			<div class="labelContainer">Search In Project</div>
+			<ul class="inputContainer searchBoxText">
+
+				<select class="projectIdSelector" id="17150be9-5440-482c-a322-5e45fc5fcc4b" multiple="multiple">
+				</select>
+
+
+			</ul>
+			<hr class="searchOptionsSeparator" />
+			<div class="labelContainer linkActionLabel"><span>Search in</span><a href="#" class="clearAllLink">Clear</a></div>
+			<ul class="inputContainer">
+								<li class="inputField  " title="Work Items">
+					<input type="checkbox" id="4da27588-b4b7-4675-b5a0-bede661e8743" name="searchOnArtifact" value="4"  checked />
+					<label for="4da27588-b4b7-4675-b5a0-bede661e8743">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/trackers-s-2.png"></img>
+						</span>
+						Work Items
+					</label>
+				</li>
+								<li class="inputField  " title="Branched Work Items">
+					<input type="checkbox" id="5a07c1e8-7010-47e7-b39a-73e5a3bb7dbc" name="searchOnArtifact" value="65536"  checked />
+					<label for="5a07c1e8-7010-47e7-b39a-73e5a3bb7dbc">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/trackers-s-2.png"></img>
+						</span>
+						Branched Work Items
+					</label>
+				</li>
+								<li class="inputField combinedListElement " title="Trackers & Branches & Baselines">
+					<input type="checkbox" id="27cf6e02-c955-4754-ae71-08097d06cb53" name="searchOnArtifact" value="16384"  checked />
+					<label for="27cf6e02-c955-4754-ae71-08097d06cb53">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/icon-branch.png"></img>
+						</span>
+						Trackers & Branches & Baselines
+					</label>
+				</li>
+								<li class="inputField  " title="Documents">
+					<input type="checkbox" id="edac7af1-d1ad-4d86-bfdc-8092f80ec38e" name="searchOnArtifact" value="64"  checked />
+					<label for="edac7af1-d1ad-4d86-bfdc-8092f80ec38e">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/documents-s-2.png"></img>
+						</span>
+						Documents
+					</label>
+				</li>
+								<li class="inputField  " title="Wikis & Dashboards">
+					<input type="checkbox" id="74c5c83e-e6ae-4ad5-876d-ac54eec7d731" name="searchOnArtifact" value="8192"  checked />
+					<label for="74c5c83e-e6ae-4ad5-876d-ac54eec7d731">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/wiki-s-2.png"></img>
+						</span>
+						Wikis & Dashboards
+					</label>
+				</li>
+								<li class="inputField  " title="Item Attachments & Comments">
+					<input type="checkbox" id="58e392d3-bf0b-4581-a902-23fe6fd742aa" name="searchOnArtifact" value="32" />
+					<label for="58e392d3-bf0b-4581-a902-23fe6fd742aa">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/action/attach-s.png"></img>
+						</span>
+						Item Attachments & Comments
+					</label>
+				</li>
+								<li class="inputField hiddenListElement " title="Baselines">
+					<input type="checkbox" id="3ff7de46-0456-4fb7-91a7-4eb19f54e3e5" name="searchOnArtifact" value="32768"  checked />
+					<label for="3ff7de46-0456-4fb7-91a7-4eb19f54e3e5">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/icon-baseline.png"></img>
+						</span>
+						Baselines
+					</label>
+				</li>
+								<li class="inputField  " title="Source code Commits">
+					<input type="checkbox" id="bc7228c7-cb82-4e23-9c46-1aad0203b0ef" name="searchOnArtifact" value="1024" />
+					<label for="bc7228c7-cb82-4e23-9c46-1aad0203b0ef">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/scm-commit-s.png"></img>
+						</span>
+						Source code Commits
+					</label>
+				</li>
+							</ul>
+			<hr class="searchOptionsSeparator" />
+			<div class="searchButtonContainer">
+				<input type="button" class="button searchOptionsButton" title="Start Search" value="GO" />
+				<a href="/cb/advancedSearch.spr" class="advancedSearchLink" title="Advanced Search"><img src="/cb/images/newskin/action/control-m-2.png" /></a>
+			</div>
+		</div>
+
+		<script>codebeamer.toolbar.initSearchField('.toprightmenu .searchContainer'); codebeamer.toolbar.initClearAllLink('.toprightmenu .searchOptions'); codebeamer.toolbar.initCombinedListElement('.toprightmenu .searchOptions'); codebeamer.toolbar.initGoToHistoryLink('.toprightmenu .searchOptions');</script>
+	</form>
+</div><div class="userLinkContainer"><span id='userQuickMenuPopup1753683585247' class='inlinemenuTrigger ' ><a href="/cb/userdata/111" class='userQuickMenu userLink'  data-at='left bottom+8'  onclick="return false;"><span class="userPhotoPlaceholder tableIcon" style="background-color: #ffbc6b">
+	<span class="userIntials" style="color: black">SU</span>
+</span>Shubham.Upadhyay</a></span><div class='yuimenu inlinemenu' id='userQuickMenuPopup1753683585247popup'><div class='bd'><ul class='first-menu-item first-of-type'><li class='yuimenuitem'><a class='yuimenuitemlabel hidden-link ' href='null'><span class='item-label'></span></a><link rel="stylesheet" href="/cb/urlversioned/202507280411/stylesheet/user-profile-information.less" type="text/css" media="all" />
+
+<a class="userProfileContainer" href="/cb/myaccount.spr">
+			<span class="userPhotoPlaceholder largePhoto photoBox profilePhoto" style="background-color: #ffbc6b">
+	<span class="userIntials" style="color: black">SU</span>
+</span>
+		<div class="userDetails">
+		<div>Shubham Upadhyay</div>
+					<div class="licenseInfo licenseCode">ALM</div>
+				            <div class="licenseInfo">PHILIPS.SOn 3453857</div>
+					</div>
+</a></li></ul><h6 class='first-of-type'></h6><ul><li class='yuimenuitem'><a class='yuimenuitemlabel  yuimenuitemlabel-with-icon' href='/cb/history.spr' onclick="inlinePopup.show('/cb/history.spr'); return false;"><img class="tableIcon" src="/cb/images/newskin/header/icon_user_history.png" /><span class='item-label'>Recently Visited Items</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel  yuimenuitemlabel-with-icon' href='/cb/userPreferences.spr' onclick="inlinePopup.show('/cb/userPreferences.spr'); return false;"><img class="tableIcon" src="/cb/images/newskin/header/icon_user_preferences.png" /><span class='item-label'>Preferences</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel  yuimenuitemlabel-with-icon' href='https://support.ptc.com/help/codebeamer/r3.0/en/codebeamer/codebeamer_welcome.html' onclick="launch_url('https://support.ptc.com/help/codebeamer/r3.0/en/codebeamer/codebeamer_welcome.html'); return false;"><img class="tableIcon" src="/cb/images/newskin/header/icon_user_help.png" /><span class='item-label'>Help Center</span></a></li></ul><h6></h6><ul><li class='yuimenuitem'><a class='yuimenuitemlabel ' href='/cb/selectLanguage.spr?language=de'><span class='item-label'>Deutsch</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel disabled' href='#'><span class='item-label'>English</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel ' href='/cb/selectLanguage.spr?language=ja'><span class='item-label'>日本語</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel ' href='/cb/selectLanguage.spr?language=zh_CN'><span class='item-label'>简中</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel ' href='/cb/selectLanguage.spr?language=ko'><span class='item-label'>한국어</span></a></li></ul><h6></h6><ul><li class='yuimenuitem'><a class='yuimenuitemlabel  yuimenuitemlabel-with-icon' href='/cb/logout.spr?targetURL=%2Flogin.spr'><img class="tableIcon" src="/cb/images/newskin/header/icon_user_logout.png" /><span class='item-label'>Log out</span></a></li></ul></div></div></div>
+		</div>
+	</div>
+</div>
+<div style="clear:both;"></div>
+
+			</div>
+		
+
+			
+				
+					<div id="toolmenuContainer">
+						
+
+
+
+
+
+
+
+
+
+<!-- toolbar start -->
+<div class="toolbar toolbar_workspace_selected" ><table class="tab" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td class="toolbarTab menuContainer  first firstCenter" data-js-callback-function-after-show="loadToolbarMenuitems" ><span id='mystart_ToolBarItem' class='inlinemenuTrigger ' ><span class='topIndicator'></span><a href='/cb/user' class='menuLabel'>My Start</a><img data-tooltip="" src='/cb/images/space.gif' class='menuArrowDown actionBarIcon' /></span><div class='yuimenu inlinemenu' id='mystart_ToolBarItempopup'><div class='bd'></div></div></td>
+<td class="toolbarTab menuContainer" data-js-callback-function-after-show="loadToolbarMenuitems" ><span id='project_browser_ToolBarItem' class='inlinemenuTrigger ' ><span class='topIndicator'></span><a href='/cb/projects/browse.spr' class='menuLabel'>Projects</a><img data-tooltip="" src='/cb/images/space.gif' class='menuArrowDown actionBarIcon' /></span><div class='yuimenu inlinemenu' id='project_browser_ToolBarItempopup'><div class='bd'></div></div></td>
+<td class="toolbarTab menuContainer" data-js-callback-function-after-show="loadToolbarMenuitems" ><span id='queries_ToolBarItem' class='inlinemenuTrigger ' ><span class='topIndicator'></span><a href='/cb/query' class='menuLabel'>Reports</a><img data-tooltip="" src='/cb/images/space.gif' class='menuArrowDown actionBarIcon' /></span><div class='yuimenu inlinemenu' id='queries_ToolBarItempopup'><div class='bd'></div></div></td>
+<td class="toolbarTab menuContainer" data-js-callback-function-after-show="loadToolbarMenuitems" ><span id='review_ToolBarItem' class='inlinemenuTrigger ' ><span class='topIndicator'></span><a target='_blank' href='https://www.sandbox.codebeamer.plm.philips.com/cb/x/#/reviewList' class='menuLabel'>Review Hub</a><img data-tooltip="" src='/cb/images/space.gif' class='menuArrowDown actionBarIcon' /></span><div class='yuimenu inlinemenu' id='review_ToolBarItempopup'><div class='bd'></div></div></td>
+<td class="toolbarTab menuContainer" data-js-callback-function-after-show="loadToolbarMenuitems" ><span id='labels_ToolBarItem' class='inlinemenuTrigger ' ><span class='topIndicator'></span><a href='/cb/proj/tag/showTags.spr' class='menuLabel'>Tags</a></span></td>
+<td class="toolbarTab menuContainer" data-js-callback-function-after-show="loadToolbarMenuitems" ><span id='sysadmin_ToolBarItem' class='inlinemenuTrigger ' ><span class='topIndicator'></span><a href='/cb/sysadmin.spr' class='menuLabel'>System Admin</a></span></td>
+<td class='toolbarIconContainer'><link rel="stylesheet" href="/cb/urlversioned/202507280411/stylesheet/toolbar-search-box.less" type="text/css" media="all" />
+<script type="text/javascript" src="/cb/urlversioned/202507280411/js/toolbar-search-box.js"></script>
+
+<div class="searchBoxContainer">
+	<form action="/cb/search.spr" method="GET">
+
+		<div class="searchContainer closed" data-original-width="174">
+			<div class="searchField">
+				<input class="searchInput" name="filter" type="text" value="" maxlength="80" placeholder="Search&hellip;" autocomplete="on">
+				<span class="toggleButton" title="Start Search"></span>
+			</div>
+		</div>
+		<div class="searchOptions">
+
+			<input type="hidden" name="advanced" value="true">
+			<input type="hidden" name="projId">
+
+			<div class="labelContainer linkActionLabel"><span>Last Modified</span><a href="#" class="goToHistoryLink">Recently Visited Items</a></div>
+			<ul class="inputContainer">
+
+									<li class="inputField" title="Ever">
+						<input type="radio" class="advancedSearchDateRangeFilter" id="everDateRangeOptiond4bc89cdd4324401b0539b45a5a76654" name="lastModifiedAtDuration" value="all"  checked="checked" >
+						<label for="everDateRangeOptiond4bc89cdd4324401b0539b45a5a76654">Ever</label>
+					</li>
+									<li class="inputField" title="Search for artifacts modified during the last 7 days">
+						<input type="radio" class="advancedSearchDateRangeFilter" id="last7DaysDateRangeOptiond4bc89cdd4324401b0539b45a5a76654" name="lastModifiedAtDuration" value="-7" >
+						<label for="last7DaysDateRangeOptiond4bc89cdd4324401b0539b45a5a76654">In 7 days</label>
+					</li>
+									<li class="inputField" title="Search for artifacts modified during the last 30 days">
+						<input type="radio" class="advancedSearchDateRangeFilter" id="last30DaysDateRangeOptiond4bc89cdd4324401b0539b45a5a76654" name="lastModifiedAtDuration" value="-30" >
+						<label for="last30DaysDateRangeOptiond4bc89cdd4324401b0539b45a5a76654">In 30 days</label>
+					</li>
+									<li class="inputField" title="Search for artifacts modified during the last 90 days">
+						<input type="radio" class="advancedSearchDateRangeFilter" id="last90DaysDateRangeOptiond4bc89cdd4324401b0539b45a5a76654" name="lastModifiedAtDuration" value="-90" >
+						<label for="last90DaysDateRangeOptiond4bc89cdd4324401b0539b45a5a76654">In 90 days</label>
+					</li>
+				
+			</ul>
+			<hr class="searchOptionsSeparator" />
+			<div class="labelContainer">Search In Project</div>
+			<ul class="inputContainer searchBoxText">
+
+				<select class="projectIdSelector" id="5ae43497-21b3-4c37-b6c5-1fe2dd58a47f" multiple="multiple">
+				</select>
+
+
+			</ul>
+			<hr class="searchOptionsSeparator" />
+			<div class="labelContainer linkActionLabel"><span>Search in</span><a href="#" class="clearAllLink">Clear</a></div>
+			<ul class="inputContainer">
+								<li class="inputField  " title="Work Items">
+					<input type="checkbox" id="d5e161c2-ac5a-4207-bc72-09cfd6206e87" name="searchOnArtifact" value="4"  checked />
+					<label for="d5e161c2-ac5a-4207-bc72-09cfd6206e87">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/trackers-s-2.png"></img>
+						</span>
+						Work Items
+					</label>
+				</li>
+								<li class="inputField  " title="Branched Work Items">
+					<input type="checkbox" id="be990882-9f4e-4401-a3cc-87e329068207" name="searchOnArtifact" value="65536"  checked />
+					<label for="be990882-9f4e-4401-a3cc-87e329068207">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/trackers-s-2.png"></img>
+						</span>
+						Branched Work Items
+					</label>
+				</li>
+								<li class="inputField combinedListElement " title="Trackers & Branches & Baselines">
+					<input type="checkbox" id="c0469455-3bae-4a13-b3be-7b127bf3aad1" name="searchOnArtifact" value="16384"  checked />
+					<label for="c0469455-3bae-4a13-b3be-7b127bf3aad1">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/icon-branch.png"></img>
+						</span>
+						Trackers & Branches & Baselines
+					</label>
+				</li>
+								<li class="inputField  " title="Documents">
+					<input type="checkbox" id="87ab29d4-5e66-4ed0-9880-eb465e65d5dc" name="searchOnArtifact" value="64"  checked />
+					<label for="87ab29d4-5e66-4ed0-9880-eb465e65d5dc">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/documents-s-2.png"></img>
+						</span>
+						Documents
+					</label>
+				</li>
+								<li class="inputField  " title="Wikis & Dashboards">
+					<input type="checkbox" id="4c1e90c0-4bd9-40f1-b27d-813db84ffdb9" name="searchOnArtifact" value="8192"  checked />
+					<label for="4c1e90c0-4bd9-40f1-b27d-813db84ffdb9">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/wiki-s-2.png"></img>
+						</span>
+						Wikis & Dashboards
+					</label>
+				</li>
+								<li class="inputField  " title="Item Attachments & Comments">
+					<input type="checkbox" id="85e3a9d5-d82c-4492-947f-47f13bc085df" name="searchOnArtifact" value="32" />
+					<label for="85e3a9d5-d82c-4492-947f-47f13bc085df">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/action/attach-s.png"></img>
+						</span>
+						Item Attachments & Comments
+					</label>
+				</li>
+								<li class="inputField hiddenListElement " title="Baselines">
+					<input type="checkbox" id="56e60033-2d63-4ea7-8db4-89f6c611bdc7" name="searchOnArtifact" value="32768"  checked />
+					<label for="56e60033-2d63-4ea7-8db4-89f6c611bdc7">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/icon-baseline.png"></img>
+						</span>
+						Baselines
+					</label>
+				</li>
+								<li class="inputField  " title="Source code Commits">
+					<input type="checkbox" id="afc402fb-7dfa-43bb-be11-d27be958653d" name="searchOnArtifact" value="1024" />
+					<label for="afc402fb-7dfa-43bb-be11-d27be958653d">
+						<span class="labelImageContainer">
+							<img class="labelImage" src="/cb/images/newskin/search/scm-commit-s.png"></img>
+						</span>
+						Source code Commits
+					</label>
+				</li>
+							</ul>
+			<hr class="searchOptionsSeparator" />
+			<div class="searchButtonContainer">
+				<input type="button" class="button searchOptionsButton" title="Start Search" value="GO" />
+				<a href="/cb/advancedSearch.spr" class="advancedSearchLink" title="Advanced Search"><img src="/cb/images/newskin/action/control-m-2.png" /></a>
+			</div>
+		</div>
+
+		<script>codebeamer.toolbar.initCollapsedSearchField('.toolbarIconContainer .searchContainer'); codebeamer.toolbar.initClearAllLink('.toolbarIconContainer .searchOptions'); codebeamer.toolbar.initCombinedListElement('.toolbarIconContainer .searchOptions'); codebeamer.toolbar.initGoToHistoryLink('.toolbarIconContainer .searchOptions');</script>
+	</form>
+</div><div class="userLinkContainer"><span id='userQuickMenuPopup1753683585249' class='inlinemenuTrigger ' ><a href="/cb/userdata/111" class='userQuickMenu userLink'  data-at='left bottom+8'  onclick="return false;"><span class="userPhotoPlaceholder tableIcon" style="background-color: #ffbc6b">
+	<span class="userIntials" style="color: black">SU</span>
+</span>Shubham.Upadhyay</a></span><div class='yuimenu inlinemenu' id='userQuickMenuPopup1753683585249popup'><div class='bd'><ul class='first-menu-item first-of-type'><li class='yuimenuitem'><a class='yuimenuitemlabel hidden-link ' href='null'><span class='item-label'></span></a><link rel="stylesheet" href="/cb/urlversioned/202507280411/stylesheet/user-profile-information.less" type="text/css" media="all" />
+
+<a class="userProfileContainer" href="/cb/myaccount.spr">
+			<span class="userPhotoPlaceholder largePhoto photoBox profilePhoto" style="background-color: #ffbc6b">
+	<span class="userIntials" style="color: black">SU</span>
+</span>
+		<div class="userDetails">
+		<div>Shubham Upadhyay</div>
+					<div class="licenseInfo licenseCode">ALM</div>
+				            <div class="licenseInfo">PHILIPS.SOn 3453857</div>
+					</div>
+</a></li></ul><h6 class='first-of-type'></h6><ul><li class='yuimenuitem'><a class='yuimenuitemlabel  yuimenuitemlabel-with-icon' href='/cb/history.spr' onclick="inlinePopup.show('/cb/history.spr'); return false;"><img class="tableIcon" src="/cb/images/newskin/header/icon_user_history.png" /><span class='item-label'>Recently Visited Items</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel  yuimenuitemlabel-with-icon' href='/cb/userPreferences.spr' onclick="inlinePopup.show('/cb/userPreferences.spr'); return false;"><img class="tableIcon" src="/cb/images/newskin/header/icon_user_preferences.png" /><span class='item-label'>Preferences</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel  yuimenuitemlabel-with-icon' href='https://support.ptc.com/help/codebeamer/r3.0/en/codebeamer/codebeamer_welcome.html' onclick="launch_url('https://support.ptc.com/help/codebeamer/r3.0/en/codebeamer/codebeamer_welcome.html'); return false;"><img class="tableIcon" src="/cb/images/newskin/header/icon_user_help.png" /><span class='item-label'>Help Center</span></a></li></ul><h6></h6><ul><li class='yuimenuitem'><a class='yuimenuitemlabel ' href='/cb/selectLanguage.spr?language=de'><span class='item-label'>Deutsch</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel disabled' href='#'><span class='item-label'>English</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel ' href='/cb/selectLanguage.spr?language=ja'><span class='item-label'>日本語</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel ' href='/cb/selectLanguage.spr?language=zh_CN'><span class='item-label'>简中</span></a></li><li class='yuimenuitem'><a class='yuimenuitemlabel ' href='/cb/selectLanguage.spr?language=ko'><span class='item-label'>한국어</span></a></li></ul><h6></h6><ul><li class='yuimenuitem'><a class='yuimenuitemlabel  yuimenuitemlabel-with-icon' href='/cb/logout.spr?targetURL=%2Flogin.spr'><img class="tableIcon" src="/cb/images/newskin/header/icon_user_logout.png" /><span class='item-label'>Log out</span></a></li></ul></div></div></div><div id='headerTogglerContainer'></div></td></tr>
+</table>
+</div>
+<!-- toolbar end -->
+
+
+					</div>
+				
+			
+
+			
+			
+		
+		</div>
+
+		<div class="ui-layout-center" style="border:0;">
+			<div class="contentArea">
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+<pre class="debug">
+globalMessagesAlreadyIncluded: true
+</pre>
+-->
+
+
+
+
+				
+				
+					
+					
+						
+<meta name="decorator" content="main"/>
+<meta name="module" content="login"/>
+<meta name="moduleCSSClass" content="newskin workspaceModule loginModule"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="actionMenuBar "  >
+		
+	
+		
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table border="0" cellpadding="0" cellspacing="0" class="rightAlign actionMenuBarContent" style="">
+	<tr>
+		<td class="rightAlignCell " >
+			<div class="actionMenuBarIcon" ></div>
+		</td>
+
+		
+			<td class="rightAlignCell "  >
+				
+	Log in
+
+			</td>
+		
+		
+		
+		<td class="rightAlignCell rightAligned "  >
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		</td>
+	</tr>
+</table>
+
+
+		
+		
+	
+
+	<div style="clear:both;" ></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+<pre class="debug">
+globalMessagesAlreadyIncluded: 
+</pre>
+-->
+
+
+	
+
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="infoMessages invisible"
+	id="globalMessages" >
+		
+			<div class="error invisible" title="Error" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+			<div class="warning invisible" title="Warning" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+			<div class="information invisible" title="Information" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+</div>
+
+	
+	
+
+	
+
+	
+	
+
+
+
+
+
+
+	
+	
+
+
+
+
+<link rel="stylesheet" href="/cb/urlversioned/202507280411/stylesheet/login.less" type="text/css" media="all" />
+
+
+
+	
+	
+	
+	
+		<div class="login-grid login-page default"><!--
+		--><div class="left column">
+			
+<meta name="pageTitle" content="PTC - Codebeamer" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/cb/urlversioned/202507280411/stylesheet/login.less" type="text/css" media="all" />
+
+<script type="text/javascript">
+jQuery(function($) {
+	$("#user").focus();
+	try {
+		clearCookiesAndLocalStorage();
+	} catch (e) {
+		console.log("Warning: can't access sessionStorage inside iframe, might be a cross-origin request?", e);
+	}
+});
+</script>
+
+
+
+
+
+
+
+
+	
+	
+		
+		
+	
+
+
+
+
+<form id="loginForm" action="/cb/login.spr" method="post">
+
+	<input type="hidden" name="targetURL" value="" />
+	<div class="login-box">
+		<div class="box_header_grey">Log in</div>
+		<div class="login_text">
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="infoMessages"
+	 >
+		
+			<div class="error onlyOneMessage " title="Error" >
+				<ul>
+					
+						<li>Invalid user credentials!</li><!-- do not escape here, because messages can be HTML -->
+					
+				</ul>
+			</div>
+		
+			<div class="warning invisible" title="Warning" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+			<div class="information invisible" title="Information" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+</div>
+
+
+
+
+			<p class="fieldLabel">Account name:</p>
+			<p><input id="user" name="user" tabindex="0" type="text" value="Shubham Upadhyay"/></p>
+			<p class="fieldLabel">Password:</p>
+			<p>
+				<input id="password" name="password" type="password" value="" autocomplete="off"/>
+				
+					<a href="/cb/lostPassword.spr" target="_blank"><small>Forgot it?</small></a>
+				
+			</p>
+
+			
+			<input class="login_button" title="Login" type="submit" value="Log in">
+
+			
+
+			
+				
+				
+				or <a href="https://www.sandbox.codebeamer.plm.philips.com:443/cb/login.spr">Log in via SSL</a>
+				<br>
+			
+
+			<span class="urls">
+				
+					
+						
+						
+							
+							
+							<a href="/cb/createUser.spr">Not a Member yet?<br>Register now!</a>
+						
+					
+				
+			</span>
+
+			
+
+			
+
+		</div>
+	</div>
+
+</form>
+
+		</div><div class='wikiContent'><div class="middle column">
+
+<h1></h1>
+
+<h2>Develop Better Software, Faster</h2>
+
+<h4>Welcome to codebeamer, the integrated Application Lifecycle Management platform.</a></h4>
+
+<!--<h4>Welcome to codebeamer, the integrated Application Lifecycle Management platform from <a href="https://intland.com/" target="_blank">Intland Software</a></h4>-->
+
+<!--<a class="video_why_codebeamer" href="https://intland.com/video/presentations/why-codebeamer-alm/" target="_blank"></a>
+
+<div class="sub-header">codebeamer's core capabilities include:</div>
+
+<table class="modules_new">
+
+<tr>
+
+<td class="module_icon alm"><a href="https://intland.com/application-lifecycle-management/" target="_blank">Application Lifecycle Management</a></td>
+
+<td class="module_icon req"><a href="https://intland.com/requirements-management/" target="_blank">Requirements Management</a></td>
+
+<td class="module_icon dev"><a href="https://intland.com/software-development/" target="_blank">Software Development</a></td>
+
+<td class="module_icon qa"><a href="https://intland.com/quality-assurance-software-testing/" target="_blank">QA and Test Management</a></td>
+
+</tr>
+
+<tr>
+
+<td class="module_icon devops"><a href="https://intland.com/devops-it-operations/" target="_blank">IT Operations / DevOps</a></td>
+
+<td class="module_icon demand"><a href="https://intland.com/demand-management/" target="_blank">Demand Management</a></td>
+
+<td class="module_icon risk"><a href="https://intland.com/risk-management/" target="_blank">Risk Management</a></td>
+
+<td class="module_icon variants"><a href="https://intland.com/risk-management/" target="_blank">Variants Management</a></td>
+
+</tr>
+
+</table>
+
+<div class="sub-header">Industry-specific solutions:</div>
+
+<table class="modules_new">
+
+<tr>
+
+<td class="module_icon medical"><a href="https://intland.com/medical-device-development/" target="_blank">Medical</a></td>
+
+<td class="module_icon auto"><a href="https://intland.com/automotive-software-engineering/" target="_blank">Automotive</a></td>
+
+<td class="module_icon aviation"><a href="https://intland.com/aviation-software-development/" target="_blank">Aviation</a></td>
+
+<td class="module_icon pharma"><a href="https://intland.com/pharma-development-projects/" target="_blank">Pharmaceutical</a></td>
+
+</tr>
+
+</table>--></div><!--
+	--></div>
+	
+
+					
+				
+			</div>
+		</div>
+		<div class="ui-layout-south" style="border:0;overflow:hidden;">
+			
+			
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Don't modify, change or delete this file without a written permission from Intland Software. -->
+
+	
+	
+		
+		
+	
+
+
+
+
+
+
+	
+
+
+<div id="footer" class="noPrint"  style="visibility: hidden;"  >
+	
+	This site is powered by <a href="/cb/about.spr" title="About this installation">Codebeamer</a> 3.0.0.1 (oracle). |
+
+	
+ 	
+		
+	
+    
+    
+        
+    
+
+    
+    
+
+	
+	
+	
+        
+			
+				
+				
+					<a class="quick-contact-link" href="https://www.ptc.com/en/support" target="_blank" title="Report an incident, request a feature, or ask a question."
+					>Incident/Question</a> |
+				
+			
+        
+    
+    &nbsp;<a href="https://support.ptc.com/help/codebeamer/r3.0/en/codebeamer/codebeamer_welcome.html" target="_blank" title="Read the Help Center">Help Center</a>
+
+    
+	| <a onclick="toggleHotkeys();" title="Show keyboard hotkeys" id="hotkey-toggle">
+		
+		<img src="/cb/images/newskin/hotkeys.png"/>
+		Hotkeys
+	</a>
+	
+		|
+		<div style="display: inline-block;">Licensed by</div>
+		<div style="display: inline-block; font-weight: bold;">PHILIPS.SOn 3453857</div>
+	
+</div>
+
+
+	<script type="text/javascript">
+		$(setupStickFooterToBottom);
+	</script>
+
+
+	<script type="text/javascript">
+		// listens for messages from cross-domain iframes
+		$(window).on("message", function(e, m) {
+			var data = e.originalEvent.data
+			if (data == "closePopup") {
+				inlinePopup.close();
+			}
+		});
+	</script>
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    var _csrf = (function() {
+
+        
+            
+            
+            
+            var csrfHeaderName = "";
+            var csrfParameterName = "";
+            var csrfToken = "";
+        
+        
+        
+        function initializeCsrf() {
+            initializeCsrfForm();
+            initializeCsrfAjaxHeader();
+        }
+
+        function initializeCsrfForm() {
+            if (hasCsrf()) {
+                $('form').each(function(i, ele) {
+                    addCsrfHiddenFieldToForm(ele);
+                });
+            }
+        }
+
+        function initializeCsrfAjaxHeader() {
+            $.ajaxSetup({
+                cache: false, // turn off caching for any ajax calls as default
+                headers: getOrCreateAjaxHeaders(csrfHeaderName, csrfToken)
+            });
+            
+        }
+
+        function submitCsrfFormWithUrl(url) {
+            var form = $('<form method="post" action="' + url + '"></form>');
+            $(document.body).append(form);
+            if (hasCsrf()) {
+                addCsrfHiddenFieldToForm(form);
+            }
+            form.submit();
+        }
+
+        function addCsrfHiddenFieldToForm(form) {
+            if (hasCsrf()) {
+                var csrfInputFieldValue = $(form).children('input[name="' + csrfParameterName + '"]').val();
+                if (!csrfInputFieldValue) {
+                    $('<input type="hidden" name="' + csrfParameterName + '" value="' + csrfToken + '"/>').prependTo(form);
+                }
+            }
+        }
+
+        function hasCsrf() {
+            return csrfHeaderName && csrfParameterName && csrfToken;
+        }
+        
+        function getOrCreateAjaxHeaders(csrfHeaderName, csrfToken) {
+            if (window.ajaxHeaders == null) {
+                window.ajaxHeaders = { };
+            }
+            if (hasCsrf()) {
+                window.ajaxHeaders[csrfHeaderName] = csrfToken;
+            }
+            return window.ajaxHeaders;
+        }
+
+        return {
+            csrfHeaderName : csrfHeaderName,
+            csrfParameterName : csrfParameterName,
+            csrfToken : csrfToken,
+            hasCsrf : hasCsrf,
+            initializeCsrf : initializeCsrf,
+            initializeCsrfForm : initializeCsrfForm,
+            initializeCsrfAjaxHeader : initializeCsrfAjaxHeader,
+            submitCsrfFormWithUrl : submitCsrfFormWithUrl,
+            addCsrfHiddenFieldToForm : addCsrfHiddenFieldToForm,
+        }
+    })();
+
+    try {
+        $(function () {
+            _csrf.initializeCsrf();
+        })
+    } catch (ignored) { }
+
+    try {
+        _csrf.initializeCsrf();
+    } catch (ignored) { }
+</script>
+
+		</div>
+
+		
+
+
+
+
+
+
+	
+	
+	
+
+
+
+
+		
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+		<!-- flushing out delayed scripts -->
+		
+			<!-- delayed script #1 -->
+			<script type='text/javascript'>initInlineMenu('userQuickMenuPopup1753683585247', {context:['userQuickMenuPopup1753683585247', 'tl', 'bl', ['beforeShow', 'windowResize']]});</script>
+		
+			<!-- delayed script #2 -->
+			<script type='text/javascript'>initTopMenu('mystart_ToolBarItem', {context:[getToolbarTab('mystart_ToolBarItem'), 'tl', 'bl', ['beforeShow', 'windowResize'], [0,1]], constraintoviewport:false, openOnClick:true});</script>
+		
+			<!-- delayed script #3 -->
+			<script type='text/javascript'>initTopMenu('project_browser_ToolBarItem', {context:[getToolbarTab('project_browser_ToolBarItem'), 'tl', 'bl', ['beforeShow', 'windowResize'], [0,1]], constraintoviewport:false, openOnClick:true});</script>
+		
+			<!-- delayed script #4 -->
+			<script type='text/javascript'>initTopMenu('queries_ToolBarItem', {context:[getToolbarTab('queries_ToolBarItem'), 'tl', 'bl', ['beforeShow', 'windowResize'], [0,1]], constraintoviewport:false, openOnClick:true});</script>
+		
+			<!-- delayed script #5 -->
+			<script type='text/javascript'>initTopMenu('review_ToolBarItem', {context:[getToolbarTab('review_ToolBarItem'), 'tl', 'bl', ['beforeShow', 'windowResize'], [0,1]], constraintoviewport:false, openOnClick:true});</script>
+		
+			<!-- delayed script #6 -->
+			<script type='text/javascript'>initInlineMenu('userQuickMenuPopup1753683585249', {context:['userQuickMenuPopup1753683585249', 'tl', 'bl', ['beforeShow', 'windowResize']]});</script>
+		
+
+		
+	
+	
+
+
+
+
+
+
+		
+		
+	
+
+<script src="/cb/urlversioned/202507280411/cb-widget-host.js"></script>
+</body>
+</html>

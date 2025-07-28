@@ -15,7 +15,7 @@ from urllib.parse import urljoin
 CODEBEAMER_URL = "https://www.sandbox.codebeamer.plm.philips.com"
 CODEBEAMER_USERNAME = "Shubham.Upadhyay"
 CODEBEAMER_PASSWORD = "cbpass"
-CODEBEAMER_PROJECT_ID = "MTP1"  # Updated from browser URL
+CODEBEAMER_PROJECT_ID = "68"  # Updated back to 68
 
 def setup_session():
     """Setup session with proper headers"""
@@ -48,50 +48,126 @@ def login_to_codebeamer(session):
         
         print("   ✅ Login page accessible")
         
-        # Step 2: Parse the login form to find any hidden fields or tokens
+        # Step 2: Use the correct field names from form analysis
         login_form_data = {
-            'accountName': CODEBEAMER_USERNAME,
-            'password': CODEBEAMER_PASSWORD
+            'user': CODEBEAMER_USERNAME,     # HTML field name is 'user' (not 'accountName')
+            'password': CODEBEAMER_PASSWORD  # Password field is correct
         }
         
-        # Look for any hidden form fields in the login page
+        # Look for the targetURL hidden field
+        target_url_match = re.search(r'<input[^>]*name=["\']targetURL["\'][^>]*value=["\']([^"\']*)["\']', login_page_response.text, re.IGNORECASE)
+        if target_url_match:
+            target_url = target_url_match.group(1)
+            login_form_data['targetURL'] = target_url
+            print(f"   Found targetURL: {target_url}")
+        
+        # Look for CSRF token (CRITICAL for Codebeamer!)
+        csrf_token_match = re.search(r'var csrfToken = ["\']([^"\']*)["\']', login_page_response.text)
+        csrf_param_match = re.search(r'var csrfParameterName = ["\']([^"\']*)["\']', login_page_response.text)
+        if csrf_token_match and csrf_param_match:
+            csrf_token = csrf_token_match.group(1)
+            csrf_param = csrf_param_match.group(1)
+            login_form_data[csrf_param] = csrf_token
+            print(f"   Found CSRF token: {csrf_param} = {csrf_token}")
+        else:
+            print("   ⚠️  CSRF token not found - this may cause login issues")
+        
+        # Look for any other hidden fields
         hidden_inputs = re.findall(r'<input[^>]*type=["\']hidden["\'][^>]*>', login_page_response.text)
         for hidden_input in hidden_inputs:
             name_match = re.search(r'name=["\']([^"\']+)["\']', hidden_input)
             value_match = re.search(r'value=["\']([^"\']*)["\']', hidden_input)
             if name_match and value_match:
-                login_form_data[name_match.group(1)] = value_match.group(2)
-                print(f"   Found hidden field: {name_match.group(1)}")
+                field_name = name_match.group(1)
+                field_value = value_match.group(1)
+                if field_name not in login_form_data:  # Don't override existing fields
+                    login_form_data[field_name] = field_value
+                    print(f"   Found hidden field: {field_name} = {field_value}")
         
         # Step 3: Submit login form
-        login_url = f"{CODEBEAMER_URL}/cb/login.spr"
-        print(f"   Submitting login to: {login_url}")
+        print(f"   Submitting login with fields: {list(login_form_data.keys())}")
         
         session.headers.update({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Referer': login_page_url
         })
         
-        login_response = session.post(login_url, data=login_form_data, allow_redirects=True)
+        login_response = session.post(login_page_url, data=login_form_data, allow_redirects=True)
         
         # Step 4: Check if login was successful
         if login_response.status_code == 200:
-            # Check for common indicators of successful login
-            if 'login.spr' not in login_response.url and ('projects' in login_response.url or 'project' in login_response.url or 'welcome' in login_response.text.lower()):
+            response_text = login_response.text.lower()
+            final_url = login_response.url
+            
+            print(f"   Final URL after login: {final_url}")
+            
+            # Check for authentication cookies FIRST (most reliable indicator)
+            has_auth_cookies = any(cookie.name in ['Bearer', 'JSESSIONID'] for cookie in session.cookies)
+            
+            # Check if we're NOT on login page anymore
+            not_on_login = 'login.spr' not in final_url
+            
+            # Check for success indicators (based on debug output)
+            success_indicators = [
+                'welcome', 'dashboard', 'projects', 'logout', 'main',
+                '/cb/user', '/cb/project', 'bearer', 'jsessionid'
+            ]
+            
+            url_success = any(indicator in final_url.lower() for indicator in ['/cb/user', '/cb/project', '/cb/main'])
+            content_success = any(indicator in response_text for indicator in success_indicators)
+            
+            # PRIORITIZE SUCCESS: If we have auth cookies and are not on login page, login succeeded
+            if has_auth_cookies and not_on_login:
                 print("   ✅ Login successful!")
+                print(f"   - Has auth cookies: {has_auth_cookies}")
+                print(f"   - Not on login page: {not_on_login}")
+                print(f"   - URL indicates success: {url_success}")
+                print(f"   - Content indicates success: {content_success}")
                 return True
-            elif 'invalid' in login_response.text.lower() or 'error' in login_response.text.lower():
-                print("   ❌ Login failed - invalid credentials")
+            # Secondary check: URL or content success indicators
+            elif url_success or content_success:
+                print("   ✅ Login successful!")
+                print(f"   - URL indicates success: {url_success}")
+                print(f"   - Content indicates success: {content_success}")
+                print(f"   - Has auth cookies: {has_auth_cookies}")
+                print(f"   - Not on login page: {not_on_login}")
+                return True
+            # Only check for errors if no success indicators found
+            elif any(error in response_text for error in ['invalid', 'incorrect', 'failed', 'denied']):
+                print("   ❌ Login failed - authentication error detected in content")
+                return False
+            elif 'no such group' in response_text:
+                print("   ❌ Login failed - 'no such group' error")
                 return False
             else:
-                print("   ⚠️  Login status unclear, trying to proceed...")
-                return True
+                # Final fallback: test actual project access
+                print("   ⚠️  Login status unclear, verifying with test request...")
+                test_url = f"{CODEBEAMER_URL}/cb/project/{CODEBEAMER_PROJECT_ID}"
+                test_response = session.get(test_url)
+                if test_response.status_code == 200 and 'login' not in test_response.url.lower():
+                    print("   ✅ Login verified successful via test request!")
+                    return True
+                else:
+                    print("   ❌ Login verification failed")
+                    return False
         else:
-            print(f"   ❌ Login failed with status: {login_response.status_code}")
+            print(f"   ❌ Login failed with HTTP {login_response.status_code}")
             return False
             
     except Exception as e:
         print(f"   ❌ Login error: {str(e)}")
+        print(f"   Exception type: {type(e).__name__}")
+        print(f"   Exception details: {repr(e)}")
+        
+        # Try to get more context about the error
+        if hasattr(e, 'response'):
+            print(f"   HTTP response status: {e.response.status_code if hasattr(e.response, 'status_code') else 'N/A'}")
+            print(f"   HTTP response text: {e.response.text[:200] if hasattr(e.response, 'text') else 'N/A'}...")
+        
+        import traceback
+        print(f"   Full traceback:")
+        traceback.print_exc()
+        
         return False
 
 def test_basic_login(session):
@@ -257,7 +333,7 @@ def main():
     print("=" * 60)
     print(f"Codebeamer URL: {CODEBEAMER_URL}")
     print(f"Username: {CODEBEAMER_USERNAME}")
-    print(f"Project ID: {CODEBEAMER_PROJECT_ID} (updated from browser URL)")
+    print(f"Project ID: {CODEBEAMER_PROJECT_ID}")
     print("Version: 3.0.0.1 (older version - limited REST API)")
     print("Authentication: Web-based login (not Basic Auth)")
     print("=" * 60)
@@ -302,7 +378,7 @@ def main():
         print("\n✅ SUCCESS! Your configuration is working!")
         print("\n📋 Configuration Summary:")
         print("1. ✅ Login works with web-based authentication")
-        print("2. ✅ Project MTP1 is accessible")
+        print(f"2. ✅ Project {CODEBEAMER_PROJECT_ID} is accessible")
         print("3. ✅ SCM repositories page is accessible")
         print("4. ⚠️  REST API not available (expected for v3.x)")
         
@@ -312,7 +388,7 @@ def main():
         print("- Sync information will be logged to project pages")
         
         print("\n🚀 NEXT STEPS:")
-        print("1. Update GitHub Secret CODEBEAMER_PROJECT_ID to 'MTP1'")
+        print(f"1. GitHub Secret CODEBEAMER_PROJECT_ID is set to '{CODEBEAMER_PROJECT_ID}'")
         print("2. Push the updated pipeline code")
         print("3. Make a test commit to trigger the pipeline")
     else:

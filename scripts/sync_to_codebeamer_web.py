@@ -64,9 +64,9 @@ class CodebeamerWebSync:
                 logger.error(f"Failed to get login page: {login_page_response.status_code}")
                 return False
             
-            # Step 2: Parse login form and find hidden fields
+            # Step 2: Submit login form with correct field names
             login_form_data = {
-                'accountName': self.username,
+                'user': self.username,     # HTML field name is 'user' (not 'accountName')
                 'password': self.password
             }
             

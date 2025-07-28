@@ -1,0 +1,1322 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+	
+
+
+
+
+
+
+
+ 
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+	
+
+
+
+
+
+
+
+
+<title>PTC - Codebeamer</title>
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="x-ua-compatible" content="IE=Edge">
+
+
+	
+	
+	
+
+
+<meta name="description" content="codebeamer is the award winning Collaborative Application Lifecycle Management (ALM) solution for distributed software development. It provides project management, wikis and knowledge management, document management, task, requirement and defect management, configuration management (ITIL), continuous integration, version control, source code analysis and forums through a single and secure environment."/>
+<meta name="keywords" content="git, mercurial, subversion, svn, bug tracking software, bug tracker software, issue tracking software, issue tracker software, document management software, wiki software, change management software, version control, distributed version control, distributed revision control, alm, forge, codebeamer, code beamer"/>
+<link rel="icon" href="/cb/urlversioned/202507280411/images/favicon.ico" type="image/png" />
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+	
+	if (typeof console == "undefined") {
+		var consoleLog = function(any) { /*alert(any); */ };
+		console = {
+			log: consoleLog,
+			debug: consoleLog,
+			warn: consoleLog,
+			error: consoleLog
+		};
+	} else if (!("debug" in console)) { /* IE8 does not support debug method */
+		console.debug = console.log;
+	}
+
+	var contextPath = '/cb';
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    // current language
+    var language = 'en';
+    
+    
+    
+
+    var country = '';
+    var i18nETAG = '9dd14208f370a36d824a3900d2599c0a';
+
+    console.log("Javascript is using localization: language:" + language +" (resource-language:en), country:" + country +", i18nETAG:" + i18nETAG);
+</script>
+
+
+<script type="text/javascript">
+	var developmentMode = false;
+	// add the CB version, can be used to make urls of css/js files versioned so they will get refreshed when CB upgraded automatically
+	var urlVersionParam = '202507280411';
+
+    var ajaxHeaders = {};
+
+    
+	
+	var currentWorkingSetId = null;
+	ajaxHeaders["workingSetId"] = currentWorkingSetId;
+	// console.log("ajaxHeaders:" + JSON.stringify(ajaxHeaders));
+
+    
+    var cookieSameSite = "Lax";
+
+    var codebeamer = codebeamer || {};
+    codebeamer.GLOBAL_SETTINGS = codebeamer.GLOBAL_SETTINGS || {};
+	codebeamer.GLOBAL_SETTINGS.allowHtmlMode = false;
+	codebeamer.GLOBAL_SETTINGS.insertImageByName = true;
+	codebeamer.GLOBAL_SETTINGS.insertImageByNameAndHash = true;
+
+	console.debug("Using codebeamer.GLOBAL_SETTINGS:" + codebeamer.GLOBAL_SETTINGS);
+</script>
+
+<script type="text/javascript">
+	mxBasePath = contextPath + "/js/libs/mxGraph/src";
+	mxLoadResources = false;
+	mxLanguage = language;
+</script>
+
+
+
+
+
+	<link rel="stylesheet" href="/cb/urlversioned/202507280411/wro/all.css" type="text/css" media="all" />
+
+
+
+
+
+<link rel="stylesheet" href="/cb/urlversioned/202507280411/wro/newskin.css" type="text/css" media="all" />
+<link rel="stylesheet" href="/cb/urlversioned/202507280411/wro/oslc-client.css" type="text/css" media="all" />
+
+<script type="text/javascript" src="/cb/urlversioned/202507280411/wro/all.js"></script>
+<script type="text/javascript" src="/cb/urlversioned/202507280411/wro/oslc-client.js"></script>
+
+
+<script type="text/javascript">
+	window.jsErrors = [];
+	window.onerror = function(errorMessage) {
+		(!!window['jsErrors']) || (window.jsErrors = []);
+		window.jsErrors[window.jsErrors.length] = errorMessage;
+	}
+</script>
+
+
+
+
+
+
+<style id="jstree-stylesheet"></style>
+
+
+
+
+
+
+<!-- Using the user specific date-format in Calendar component -->
+
+	
+	
+
+
+
+
+
+
+<script type="text/javascript">
+// fixing JSPwikis' collapsable shows a bullet on IE by default
+Collapsable.bullet.innerHTML = "&nbsp;";
+
+showDiff.loadAllDiffsEnabled = false;
+
+$(function () {
+	initializeHighchartLocalization(",", ".");
+	initializeJumpToDocumentViewHandler();
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+	$(function () {
+	    var userHash = "0";
+		codebeamer.userDependentStorage.initUserStorages(userHash);
+
+	    var emptyHash = "0";
+	    if (userHash !== emptyHash) {
+            clearCookiesAndLocalStorageWhenExpired(userHash);
+        }
+	});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    var _csrf = (function() {
+
+        
+            
+            
+            
+            var csrfHeaderName = "X-CSRF-TOKEN";
+            var csrfParameterName = "_csrf";
+            var csrfToken = "3a9c6412-5f4e-4353-b508-951f64d5e80e";
+        
+        
+        
+        function initializeCsrf() {
+            initializeCsrfForm();
+            initializeCsrfAjaxHeader();
+        }
+
+        function initializeCsrfForm() {
+            if (hasCsrf()) {
+                $('form').each(function(i, ele) {
+                    addCsrfHiddenFieldToForm(ele);
+                });
+            }
+        }
+
+        function initializeCsrfAjaxHeader() {
+            $.ajaxSetup({
+                cache: false, // turn off caching for any ajax calls as default
+                headers: getOrCreateAjaxHeaders(csrfHeaderName, csrfToken)
+            });
+            
+        }
+
+        function submitCsrfFormWithUrl(url) {
+            var form = $('<form method="post" action="' + url + '"></form>');
+            $(document.body).append(form);
+            if (hasCsrf()) {
+                addCsrfHiddenFieldToForm(form);
+            }
+            form.submit();
+        }
+
+        function addCsrfHiddenFieldToForm(form) {
+            if (hasCsrf()) {
+                var csrfInputFieldValue = $(form).children('input[name="' + csrfParameterName + '"]').val();
+                if (!csrfInputFieldValue) {
+                    $('<input type="hidden" name="' + csrfParameterName + '" value="' + csrfToken + '"/>').prependTo(form);
+                }
+            }
+        }
+
+        function hasCsrf() {
+            return csrfHeaderName && csrfParameterName && csrfToken;
+        }
+        
+        function getOrCreateAjaxHeaders(csrfHeaderName, csrfToken) {
+            if (window.ajaxHeaders == null) {
+                window.ajaxHeaders = { };
+            }
+            if (hasCsrf()) {
+                window.ajaxHeaders[csrfHeaderName] = csrfToken;
+            }
+            return window.ajaxHeaders;
+        }
+
+        return {
+            csrfHeaderName : csrfHeaderName,
+            csrfParameterName : csrfParameterName,
+            csrfToken : csrfToken,
+            hasCsrf : hasCsrf,
+            initializeCsrf : initializeCsrf,
+            initializeCsrfForm : initializeCsrfForm,
+            initializeCsrfAjaxHeader : initializeCsrfAjaxHeader,
+            submitCsrfFormWithUrl : submitCsrfFormWithUrl,
+            addCsrfHiddenFieldToForm : addCsrfHiddenFieldToForm,
+        }
+    })();
+
+    try {
+        $(function () {
+            _csrf.initializeCsrf();
+        })
+    } catch (ignored) { }
+
+    try {
+        _csrf.initializeCsrf();
+    } catch (ignored) { }
+</script>
+
+<script type="text/javascript">
+	$(function () {
+		if (codebeamer && codebeamer['WYSIWYG']) {
+			var cbHumanReadableFileUploadLimit = '5 GB';
+			codebeamer.WYSIWYG.setCbHumanReadableFileUploadLimit(cbHumanReadableFileUploadLimit);
+		}
+	});
+</script>
+
+
+	
+	
+
+	
+	
+	<script type="text/javascript">
+		$(function () {
+			layoutScripts.init(false, 'Collapse\/Expand Header', 'Search…');
+			// handling ajax authorization errors
+			$(document).ajaxError(ajaxErrorHandler);
+            codebeamer.Redirect.checkRedirectMessage();
+		});
+	</script>
+	
+
+	
+
+    
+
+	<script type="text/javascript">
+		var hotkeysConfig = {
+			'subjectId': null
+		};
+
+		if ("" == "false") {
+			hotkeysConfig.disabledModules = ["admin"];
+		}
+
+		var codebeamerHotkeys = new codebeamer.Hotkeys(hotkeysConfig);
+
+		// initialize the form related hotkeys as well
+		new codebeamer.FormHotkeys();
+		// used to render correct toolbar menu -> BUG-790444
+		codebeamer.projectId = '';
+
+		codebeamer.userPreferences = {
+			newWindowTarget: '_top',
+			alwaysDisplayContextMenuIcons: 'true' == 'true',
+			doubleClickEditOnDocView: 'false' == 'true',
+			doubleClickEditOnWikiSection: 'false' == 'true',
+			copyAttachmentsOnNewReferringItem: '2'
+		};
+		// turning off propagate dependencies configuration on tracker level
+		codebeamer.hidePropagateDependenciesOnTrackerLevel = true;
+	</script>
+
+	<!--
+~ Copyright by Intland Software
+~
+~ All rights reserved.
+~
+~ This software is the confidential and proprietary information
+~ of Intland Software. ("Confidential Information"). You
+~ shall not disclose such Confidential Information and shall use
+~ it only in accordance with the terms of the license agreement
+~ you entered into with Intland.
+-->
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+<body class=" yui-skin-cb newskin workspaceModule loginModule  " bgcolor="white" link="#000000" vlink="#000000" alink="#000000" topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+
+	
+	
+		
+		<div id="hotkeysHint" class="hint" onclick="toggleHotkeys(); return false;" title="Show keyboard hotkeys" style="display:none;">
+			<table>
+
+			</table>
+		</div>
+
+		
+		
+
+		<div class="ui-layout-north " style="overflow:hidden;border:0;" id="northPane">
+			<div id="headerPane">
+                
+
+                
+                
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+<div style="width: 100%;" class="headerTopContainer noPrint">
+	<a href="http://localhost:8080/cb" style="text-decoration: none;" class="logoLink">
+		<img class="logo" src="/cb/urlversioned/202507280411/logo/custom-logo5691350831500.png" style=""
+			border="0" alt="http://localhost:8080/cb" title="Visit http://localhost:8080/cb" />
+	</a>
+
+	<div class="headerCenter">
+		<span id="slogan"><p><b>Sandbox</b></p><b>Codebeamer Application Lifecycle Management (ALM)</b></span>
+		
+
+		
+	</div>
+
+	<div id="toprightmenuContainer" class="mainmenu">
+		<div class="toprightmenu">
+			
+
+
+
+
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+			
+		</div>
+	</div>
+</div>
+<div style="clear:both;"></div>
+
+			</div>
+		
+
+			
+				
+					<div id="toolmenuContainer">
+						
+
+
+
+
+
+
+
+
+
+<!-- toolbar start -->
+<div class="toolbar toolbar_workspace_selected" ><table class="tab" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td class="toolbarTab menuContainer  first currentTabCenter firstCenter" data-js-callback-function-after-show="loadToolbarMenuitems" ><span id='login_ToolBarItem' class='inlinemenuTrigger ' ><span class='topIndicator'></span><a href='/cb/login.spr' class='menuLabel'>Log in</a><img data-tooltip="" src='/cb/images/space.gif' class='menuArrowDown actionBarIcon' /></span><div class='yuimenu inlinemenu' id='login_ToolBarItempopup'><div class='bd'></div></div></td>
+<td class="toolbarTab menuContainer  currentTabPost currentTabPostCenter" data-js-callback-function-after-show="loadToolbarMenuitems" ><span id='project_browser_ToolBarItem' class='inlinemenuTrigger ' ><span class='topIndicator'></span><a href='/cb/projects/browse.spr' class='menuLabel'>Projects</a><img data-tooltip="" src='/cb/images/space.gif' class='menuArrowDown actionBarIcon' /></span><div class='yuimenu inlinemenu' id='project_browser_ToolBarItempopup'><div class='bd'></div></div></td>
+<td class='toolbarIconContainer'><div id='headerTogglerContainer'></div></td></tr>
+</table>
+</div>
+<!-- toolbar end -->
+
+
+					</div>
+				
+			
+
+			
+			
+		
+		</div>
+
+		<div class="ui-layout-center" style="border:0;">
+			<div class="contentArea">
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+<pre class="debug">
+globalMessagesAlreadyIncluded: true
+</pre>
+-->
+
+
+
+
+				
+				
+					
+					
+						
+<meta name="decorator" content="main"/>
+<meta name="module" content="login"/>
+<meta name="moduleCSSClass" content="newskin workspaceModule loginModule"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="actionMenuBar "  >
+		
+	
+		
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table border="0" cellpadding="0" cellspacing="0" class="rightAlign actionMenuBarContent" style="">
+	<tr>
+		<td class="rightAlignCell " >
+			<div class="actionMenuBarIcon" ></div>
+		</td>
+
+		
+			<td class="rightAlignCell "  >
+				
+	Log in
+
+			</td>
+		
+		
+		
+		<td class="rightAlignCell rightAligned "  >
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		</td>
+	</tr>
+</table>
+
+
+		
+		
+	
+
+	<div style="clear:both;" ></div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+<pre class="debug">
+globalMessagesAlreadyIncluded: 
+</pre>
+-->
+
+
+	
+
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="infoMessages invisible"
+	id="globalMessages" >
+		
+			<div class="error invisible" title="Error" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+			<div class="warning invisible" title="Warning" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+			<div class="information invisible" title="Information" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+</div>
+
+	
+	
+
+	
+
+	
+	
+
+
+
+
+
+
+	
+	
+
+
+
+
+<link rel="stylesheet" href="/cb/urlversioned/202507280411/stylesheet/login.less" type="text/css" media="all" />
+
+
+
+	
+	
+	
+	
+		<div class="login-grid login-page default"><!--
+		--><div class="left column">
+			
+<meta name="pageTitle" content="PTC - Codebeamer" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/cb/urlversioned/202507280411/stylesheet/login.less" type="text/css" media="all" />
+
+<script type="text/javascript">
+jQuery(function($) {
+	$("#user").focus();
+	try {
+		clearCookiesAndLocalStorage();
+	} catch (e) {
+		console.log("Warning: can't access sessionStorage inside iframe, might be a cross-origin request?", e);
+	}
+});
+</script>
+
+
+
+
+
+
+
+
+	
+	
+		
+		
+	
+
+
+
+
+<form id="loginForm" action="/cb/login.spr" method="post">
+
+	<input type="hidden" name="targetURL" value="" />
+	<div class="login-box">
+		<div class="box_header_grey">Log in</div>
+		<div class="login_text">
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="infoMessages invisible"
+	 >
+		
+			<div class="error invisible" title="Error" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+			<div class="warning invisible" title="Warning" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+			<div class="information invisible" title="Information" >
+				<ul>
+					
+				</ul>
+			</div>
+		
+</div>
+
+
+
+
+			<p class="fieldLabel">Account name:</p>
+			<p><input id="user" name="user" tabindex="0" type="text" value=""/></p>
+			<p class="fieldLabel">Password:</p>
+			<p>
+				<input id="password" name="password" type="password" value="" autocomplete="off"/>
+				
+					<a href="/cb/lostPassword.spr" target="_blank"><small>Forgot it?</small></a>
+				
+			</p>
+
+			
+			<input class="login_button" title="Login" type="submit" value="Log in">
+
+			
+
+			
+				
+				
+				or <a href="https://www.sandbox.codebeamer.plm.philips.com:443/cb/login.spr">Log in via SSL</a>
+				<br>
+			
+
+			<span class="urls">
+				
+					
+						
+						
+							
+							
+							<a href="/cb/createUser.spr">Not a Member yet?<br>Register now!</a>
+						
+					
+				
+			</span>
+
+			
+
+			
+
+		</div>
+	</div>
+
+</form>
+
+		</div><div class='wikiContent'><div class="middle column">
+
+<h1></h1>
+
+<h2>Develop Better Software, Faster</h2>
+
+<h4>Welcome to codebeamer, the integrated Application Lifecycle Management platform.</a></h4>
+
+<!--<h4>Welcome to codebeamer, the integrated Application Lifecycle Management platform from <a href="https://intland.com/" target="_blank">Intland Software</a></h4>-->
+
+<!--<a class="video_why_codebeamer" href="https://intland.com/video/presentations/why-codebeamer-alm/" target="_blank"></a>
+
+<div class="sub-header">codebeamer's core capabilities include:</div>
+
+<table class="modules_new">
+
+<tr>
+
+<td class="module_icon alm"><a href="https://intland.com/application-lifecycle-management/" target="_blank">Application Lifecycle Management</a></td>
+
+<td class="module_icon req"><a href="https://intland.com/requirements-management/" target="_blank">Requirements Management</a></td>
+
+<td class="module_icon dev"><a href="https://intland.com/software-development/" target="_blank">Software Development</a></td>
+
+<td class="module_icon qa"><a href="https://intland.com/quality-assurance-software-testing/" target="_blank">QA and Test Management</a></td>
+
+</tr>
+
+<tr>
+
+<td class="module_icon devops"><a href="https://intland.com/devops-it-operations/" target="_blank">IT Operations / DevOps</a></td>
+
+<td class="module_icon demand"><a href="https://intland.com/demand-management/" target="_blank">Demand Management</a></td>
+
+<td class="module_icon risk"><a href="https://intland.com/risk-management/" target="_blank">Risk Management</a></td>
+
+<td class="module_icon variants"><a href="https://intland.com/risk-management/" target="_blank">Variants Management</a></td>
+
+</tr>
+
+</table>
+
+<div class="sub-header">Industry-specific solutions:</div>
+
+<table class="modules_new">
+
+<tr>
+
+<td class="module_icon medical"><a href="https://intland.com/medical-device-development/" target="_blank">Medical</a></td>
+
+<td class="module_icon auto"><a href="https://intland.com/automotive-software-engineering/" target="_blank">Automotive</a></td>
+
+<td class="module_icon aviation"><a href="https://intland.com/aviation-software-development/" target="_blank">Aviation</a></td>
+
+<td class="module_icon pharma"><a href="https://intland.com/pharma-development-projects/" target="_blank">Pharmaceutical</a></td>
+
+</tr>
+
+</table>--></div><!--
+	--></div>
+	
+
+					
+				
+			</div>
+		</div>
+		<div class="ui-layout-south" style="border:0;overflow:hidden;">
+			
+			
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Don't modify, change or delete this file without a written permission from Intland Software. -->
+
+	
+	
+		
+		
+	
+
+
+
+
+
+
+
+<div id="footer" class="noPrint"  style="visibility: hidden;"  >
+	
+	This site is powered by <a href="https://intland.com/codebeamer/product-overview/" title="About this installation">Codebeamer</a> 3.0.0.1 (oracle). |
+
+	
+ 	
+		
+	
+    
+    
+        
+    
+
+    
+    
+
+	
+	
+	
+        
+			
+				
+				
+					<a class="quick-contact-link" href="https://www.ptc.com/en/support" target="_blank" title="Report an incident, request a feature, or ask a question."
+					>Incident/Question</a> |
+				
+			
+        
+    
+    &nbsp;<a href="https://support.ptc.com/help/codebeamer/r3.0/en/codebeamer/codebeamer_welcome.html" target="_blank" title="Read the Help Center">Help Center</a>
+
+    
+	| <a onclick="toggleHotkeys();" title="Show keyboard hotkeys" id="hotkey-toggle">
+		
+		<img src="/cb/images/newskin/hotkeys.png"/>
+		Hotkeys
+	</a>
+	
+		|
+		<div style="display: inline-block;">Licensed by</div>
+		<div style="display: inline-block; font-weight: bold;">PHILIPS.SOn 3453857</div>
+	
+</div>
+
+
+	<script type="text/javascript">
+		$(setupStickFooterToBottom);
+	</script>
+
+
+	<script type="text/javascript">
+		// listens for messages from cross-domain iframes
+		$(window).on("message", function(e, m) {
+			var data = e.originalEvent.data
+			if (data == "closePopup") {
+				inlinePopup.close();
+			}
+		});
+	</script>
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    var _csrf = (function() {
+
+        
+            
+            
+            
+            var csrfHeaderName = "X-CSRF-TOKEN";
+            var csrfParameterName = "_csrf";
+            var csrfToken = "3a9c6412-5f4e-4353-b508-951f64d5e80e";
+        
+        
+        
+        function initializeCsrf() {
+            initializeCsrfForm();
+            initializeCsrfAjaxHeader();
+        }
+
+        function initializeCsrfForm() {
+            if (hasCsrf()) {
+                $('form').each(function(i, ele) {
+                    addCsrfHiddenFieldToForm(ele);
+                });
+            }
+        }
+
+        function initializeCsrfAjaxHeader() {
+            $.ajaxSetup({
+                cache: false, // turn off caching for any ajax calls as default
+                headers: getOrCreateAjaxHeaders(csrfHeaderName, csrfToken)
+            });
+            
+        }
+
+        function submitCsrfFormWithUrl(url) {
+            var form = $('<form method="post" action="' + url + '"></form>');
+            $(document.body).append(form);
+            if (hasCsrf()) {
+                addCsrfHiddenFieldToForm(form);
+            }
+            form.submit();
+        }
+
+        function addCsrfHiddenFieldToForm(form) {
+            if (hasCsrf()) {
+                var csrfInputFieldValue = $(form).children('input[name="' + csrfParameterName + '"]').val();
+                if (!csrfInputFieldValue) {
+                    $('<input type="hidden" name="' + csrfParameterName + '" value="' + csrfToken + '"/>').prependTo(form);
+                }
+            }
+        }
+
+        function hasCsrf() {
+            return csrfHeaderName && csrfParameterName && csrfToken;
+        }
+        
+        function getOrCreateAjaxHeaders(csrfHeaderName, csrfToken) {
+            if (window.ajaxHeaders == null) {
+                window.ajaxHeaders = { };
+            }
+            if (hasCsrf()) {
+                window.ajaxHeaders[csrfHeaderName] = csrfToken;
+            }
+            return window.ajaxHeaders;
+        }
+
+        return {
+            csrfHeaderName : csrfHeaderName,
+            csrfParameterName : csrfParameterName,
+            csrfToken : csrfToken,
+            hasCsrf : hasCsrf,
+            initializeCsrf : initializeCsrf,
+            initializeCsrfForm : initializeCsrfForm,
+            initializeCsrfAjaxHeader : initializeCsrfAjaxHeader,
+            submitCsrfFormWithUrl : submitCsrfFormWithUrl,
+            addCsrfHiddenFieldToForm : addCsrfHiddenFieldToForm,
+        }
+    })();
+
+    try {
+        $(function () {
+            _csrf.initializeCsrf();
+        })
+    } catch (ignored) { }
+
+    try {
+        _csrf.initializeCsrf();
+    } catch (ignored) { }
+</script>
+
+		</div>
+
+		
+
+
+
+
+
+
+	
+	
+	
+
+
+
+
+		
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+		<!-- flushing out delayed scripts -->
+		
+			<!-- delayed script #1 -->
+			<script type='text/javascript'>initTopMenu('login_ToolBarItem', {context:[getToolbarTab('login_ToolBarItem'), 'tl', 'bl', ['beforeShow', 'windowResize'], [0,1]], constraintoviewport:false, openOnClick:true});</script>
+		
+			<!-- delayed script #2 -->
+			<script type='text/javascript'>initTopMenu('project_browser_ToolBarItem', {context:[getToolbarTab('project_browser_ToolBarItem'), 'tl', 'bl', ['beforeShow', 'windowResize'], [0,1]], constraintoviewport:false, openOnClick:true});</script>
+		
+
+		
+	
+	
+
+
+
+
+
+
+		
+		
+	
+
+<script src="/cb/urlversioned/202507280411/cb-widget-host.js"></script>
+</body>
+</html>
