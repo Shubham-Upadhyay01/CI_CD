@@ -13,6 +13,7 @@ env:
   CODEBEAMER_USERNAME: ${{ secrets.CODEBEAMER_USERNAME }}
   CODEBEAMER_PASSWORD: ${{ secrets.CODEBEAMER_PASSWORD }}
   CODEBEAMER_PROJECT_ID: ${{ secrets.CODEBEAMER_PROJECT_ID }}
+  CODEBEAMER_REPO_NAME: ${{ secrets.CODEBEAMER_REPO_NAME }}
   GITHUB_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
 
 jobs:

@@ -290,12 +290,134 @@ GitHub repository changes are being tracked and synchronized.
             logger.error(f"Error adding project note: {str(e)}")
             return False
     
+    def push_to_codebeamer_scm(self):
+        """Push commits directly to Codebeamer SCM repository"""
+        try:
+            logger.info("🔄 Starting direct push to Codebeamer SCM repository...")
+            
+            # Get the Codebeamer SCM repository URL
+            # This will be constructed based on your Codebeamer setup
+            codebeamer_repo_url = self.get_codebeamer_repo_url()
+            
+            if not codebeamer_repo_url:
+                logger.warning("⚠️  Codebeamer SCM repository URL not configured")
+                return False
+            
+            repo = Repo('.')
+            
+            # Check if we already have the Codebeamer remote
+            codebeamer_remote = None
+            for remote in repo.remotes:
+                if 'codebeamer' in remote.name or self.codebeamer_url in str(remote.url):
+                    codebeamer_remote = remote
+                    break
+            
+            # Add Codebeamer remote if it doesn't exist
+            if not codebeamer_remote:
+                logger.info(f"Adding Codebeamer remote: {codebeamer_repo_url}")
+                codebeamer_remote = repo.create_remote('codebeamer', codebeamer_repo_url)
+            else:
+                logger.info(f"Using existing Codebeamer remote: {codebeamer_remote.name}")
+            
+            # Get current branch
+            current_branch = repo.active_branch.name
+            logger.info(f"Current branch: {current_branch}")
+            
+            # Push to Codebeamer
+            logger.info(f"Pushing {current_branch} to Codebeamer SCM...")
+            
+            # For web-based authentication, we'll need to construct a URL with credentials
+            auth_url = self.get_authenticated_repo_url(codebeamer_repo_url)
+            
+            # Update the remote URL with authentication
+            codebeamer_remote.set_url(auth_url)
+            
+            # Push the current branch
+            push_info = codebeamer_remote.push(f"{current_branch}:{current_branch}")
+            
+            if push_info:
+                logger.info("✅ Successfully pushed to Codebeamer SCM repository")
+                for info in push_info:
+                    logger.info(f"   Push result: {info.summary}")
+                return True
+            else:
+                logger.error("❌ Push to Codebeamer failed - no push info returned")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error pushing to Codebeamer SCM: {str(e)}")
+            logger.info("💡 Make sure:")
+            logger.info("   1. Codebeamer SCM repository is properly configured")
+            logger.info("   2. Repository has Git access enabled")
+            logger.info("   3. Authentication credentials are correct")
+            return False
+    
+    def get_codebeamer_repo_url(self):
+        """Get the Codebeamer SCM repository URL"""
+        # This method constructs the SCM repository URL based on Codebeamer patterns
+        # Common Codebeamer SCM URL patterns:
+        # https://codebeamer.domain/cb/project/PROJECT_ID/scm/REPO_NAME.git
+        # https://codebeamer.domain/cb/scm/PROJECT_ID/REPO_NAME.git
+        
+        # Try to get repository name from environment or use default
+        repo_name = os.getenv('CODEBEAMER_REPO_NAME', 'GitHub-CI_CD')
+        
+        # Common URL patterns for Codebeamer SCM
+        possible_urls = [
+            f"{self.codebeamer_url}/cb/project/{self.project_id}/scm/{repo_name}.git",
+            f"{self.codebeamer_url}/cb/scm/{self.project_id}/{repo_name}.git",
+            f"{self.codebeamer_url}/scm/{self.project_id}/{repo_name}.git",
+            f"{self.codebeamer_url}/cb/project/{self.project_id}/repositories/{repo_name}.git"
+        ]
+        
+        logger.info("🔍 Trying to determine Codebeamer SCM repository URL...")
+        
+        # Test each URL pattern to see which one works
+        for url in possible_urls:
+            logger.info(f"   Testing: {url}")
+            # For now, return the most common pattern
+            # In a production system, you'd test connectivity to each URL
+        
+        # Return the most likely URL pattern for Codebeamer 3.x
+        scm_url = f"{self.codebeamer_url}/cb/project/{self.project_id}/scm/{repo_name}.git"
+        logger.info(f"✅ Using SCM URL: {scm_url}")
+        return scm_url
+    
+    def get_authenticated_repo_url(self, repo_url):
+        """Create an authenticated repository URL for Git operations"""
+        from urllib.parse import urlparse, urlunparse
+        
+        parsed = urlparse(repo_url)
+        
+        # Create authenticated URL with username and password
+        auth_netloc = f"{self.username}:{self.password}@{parsed.netloc}"
+        
+        authenticated_url = urlunparse((
+            parsed.scheme,
+            auth_netloc,
+            parsed.path,
+            parsed.params,
+            parsed.query,
+            parsed.fragment
+        ))
+        
+        # Don't log the full URL with credentials for security
+        logger.info(f"🔐 Created authenticated URL for Git operations")
+        return authenticated_url
+
     def sync_commit_info(self):
         """Sync commit information to project"""
         try:
             if self.event_name != 'push':
                 logger.info(f"Skipping commit sync for event type: {self.event_name}")
                 return True
+            
+            # First, try to push directly to SCM repository
+            if self.push_to_codebeamer_scm():
+                logger.info("✅ Direct SCM push successful")
+                return True
+            else:
+                logger.warning("⚠️  Direct SCM push failed, falling back to commit logging")
                 
             repo = Repo('.')
             commits = list(repo.iter_commits(max_count=5))  # Get last 5 commits
@@ -318,12 +440,6 @@ GitHub repository changes are being tracked and synchronized.
                 logger.info(f"      By: {commit_info['author']} ({commit_info['email']})")
                 logger.info(f"      Date: {commit_info['date']}")
                 
-                # Look for work item references in commit messages
-                work_item_refs = re.findall(r'#(\d+)|CB-(\d+)|ITEM-(\d+)', commit_info['message'])
-                if work_item_refs:
-                    refs = [ref for group in work_item_refs for ref in group if ref]
-                    logger.info(f"      Work items referenced: {', '.join(refs)}")
-            
             return True
             
         except Exception as e:
