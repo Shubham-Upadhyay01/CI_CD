@@ -1,1 +1,1 @@
-this is to test is pipeline is working 
+"Test Codebeamer 3.x integration" 
